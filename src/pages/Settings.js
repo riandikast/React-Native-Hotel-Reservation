@@ -18,6 +18,7 @@ import {logoutAcc, updateAcc} from '../features/UserSlice';
 import {useDispatch} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useState, useEffect} from 'react';
+import SelectDropdown from 'react-native-select-dropdown';
 
 export default function Settings({navigation}) {
   const [id, setID] = useState();
@@ -28,6 +29,9 @@ export default function Settings({navigation}) {
   const [password, setPassword] = useState();
   const [gender, setGender] = useState();
   const dispatch = useDispatch();
+  const dropdownIcon = require('../assets/Dropdown.png');
+  const openedDropdownIcon = require('../assets/OpenedDropdown.png');
+  const genderOption = ['Male', 'Female'];
   const handleLogout = async () => {
     try {
       const accountData = await AsyncStorage.getItem('@account').then(
@@ -60,7 +64,17 @@ export default function Settings({navigation}) {
       const accountData = await AsyncStorage.getItem('@account').then(
         JSON.parse,
       );
-      dispatch(updateAcc({account: accountData, id:id, image:image, firstname: firstname, lastname:lastname, email:email, gender:gender}));
+      dispatch(
+        updateAcc({
+          account: accountData,
+          id: id,
+          image: image,
+          firstname: firstname,
+          lastname: lastname,
+          email: email,
+          gender: gender,
+        }),
+      );
     } catch (err) {}
   };
 
@@ -69,9 +83,9 @@ export default function Settings({navigation}) {
   }, []);
 
   useEffect(() => {
-    updateUserData()
+    updateUserData();
   }, [email, password, image, gender, firstname, lastname]);
-  
+
   return (
     <SafeAreaView>
       <View className="bg-[#405189]">
@@ -145,43 +159,41 @@ export default function Settings({navigation}) {
             <Text className="text-black text-left my-3 text-xl ml-6 font-semibold">
               Gender
             </Text>
-            <Text
-              className="text-black text-left my-3 text-xl ml-auto mr-3 opacity-50"
-              onChangeText={value => {
-                setGender(value);
-              }}>
-              {gender}
-            </Text>
-            <Image
-              className={'w-6 h-6  mt-4 mr-3 '}
-              source={require('../assets/Forward.png')}
-            />
+            <View className='ml-auto'>
+              <SelectDropdown
+                defaultValue={gender}
+                defaultButtonText={gender}
+               
+                renderDropdownIcon={isOpened => {
+                  return (
+                    <Image
+                      className="h-4 w-4 mr-3 -ml-36"
+                      source={isOpened ? openedDropdownIcon : dropdownIcon}
+                    />
+                  );
+                }}
+                buttonTextStyle={{opacity: 50, color:'#fffff'}}
+                buttonStyle={{backgroundColor: '#ffffff'}}
+                data={genderOption}
+                onSelect={(selectedItem, index) => {
+                  setGender(selectedItem)
+        
+                }}
+                buttonTextAfterSelection={(selectedItem, index) => {
+               
+                  return selectedItem;
+                }}
+                rowTextForSelection={(item, index) => {
+                  return item;
+                }}
+              />
+            </View>
           </View>
 
-          <View className="bg-white mx-8 flex-row  border-black ">
-            <Text className="text-black text-left my-3 text-xl ml-6 font-semibold">
-              Language
-            </Text>
-
-            <Image
-              className={'w-6 h-6 ml-auto mt-4 mr-3 '}
-              source={require('../assets/Forward.png')}
-            />
-          </View>
-
-          <View className="bg-white mx-8 flex-row  border-black ">
-            <Text className="text-black text-left my-3 text-xl ml-6 font-semibold">
-              Search History
-            </Text>
-
-            <Image
-              className={'w-6 h-6 ml-auto mt-4 mr-3 '}
-              source={require('../assets/Forward.png')}
-            />
-          </View>
+ 
         </View>
         <View>
-          <Text className="text-[#405189] underline text-3xl mt-4 mb-1 ml-10 font-bold">
+          <Text className="text-[#405189] underline text-3xl mt-8 mb-1 ml-10 font-bold">
             Support
           </Text>
 
