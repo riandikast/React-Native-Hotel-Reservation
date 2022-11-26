@@ -14,6 +14,7 @@ import Splashscreen from './src/pages/Splashscreen';
 import React, {useEffect, useState} from 'react';
 import {Image, TouchableHighlight, View, Text} from 'react-native';
 import axios from 'axios';
+import Detail from './src/pages/Detail';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -89,6 +90,7 @@ function MyStack() {
       <Stack.Screen name="Home" component={TabNav} />
       <Stack.Screen name="Register" component={Register} />
       <Stack.Screen name="Login" component={Login} />
+      <Stack.Screen name="Detail" component={Detail} />
     </Stack.Navigator>
   );
 }

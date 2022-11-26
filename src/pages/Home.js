@@ -1,21 +1,19 @@
 import {
-      Button,
-      TextInput,
-      Text,
-      Image,
-      View,
-      ImageBackground,
-      ScrollView,
-      SafeAreaView,
-      TouchableOpacity,
-    } from 'react-native';
-    
-    import * as React from 'react';
-    import axios from "axios"
-    import {NavigationContainer} from '@react-navigation/native';
-    import {createNativeStackNavigator} from '@react-navigation/native-stack';
-    
-    
+  Button,
+  TextInput,
+  Text,
+  Image,
+  View,
+  ImageBackground,
+  ScrollView,
+  SafeAreaView,
+  TouchableOpacity,
+} from 'react-native';  
+  import * as React from 'react';
+  import axios from "axios";
+  import {NavigationContainer} from '@react-navigation/native';
+  import {createNativeStackNavigator} from '@react-navigation/native-stack';
+      
   export default function Home({navigation}) {
     const exImage = require('../assets/hotel.jpeg');
     const searchIcon = require('../assets/SearchIcon.png');
@@ -46,7 +44,10 @@ import {
                           <Text className="text-xl text-white absolute bottom-3 left-4">Bali</Text>
                       </ImageBackground>
                     </View>
-                    <View className="snap-center">
+                    <View 
+                      className="snap-center"
+                      onStartShouldSetResponder={() => navigation.navigate('Detail')}
+                    >
                       <ImageBackground source={exImage} className="mr-3 w-44 h-40" imageStyle={{ borderRadius: 10}}>
                         <Text className="text-xl text-white absolute bottom-3 left-4">Yogyakarta</Text>
                       </ImageBackground>
