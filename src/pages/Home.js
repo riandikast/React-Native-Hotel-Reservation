@@ -13,16 +13,27 @@ import {
   import axios from "axios";
   import {NavigationContainer} from '@react-navigation/native';
   import {createNativeStackNavigator} from '@react-navigation/native-stack';
-      
+  import AsyncStorage from '@react-native-async-storage/async-storage';
+
   export default function Home({navigation}) {
     const exImage = require('../assets/hotel.jpeg');
     const searchIcon = require('../assets/SearchIcon.png');
+
+    const setNavigator = async () => {
+      try {
+          AsyncStorage.setItem('@temporaryNavigation', "home");
+      }catch(err){
+
+      }
+      navigation.navigate('Login')
+    
+    }
       return (
         <SafeAreaView>
           <View>
             <TouchableOpacity activeOpacity={1.0}>
               <Text
-                onPress={() => navigation.navigate('Login')}
+                onPress={setNavigator}
                 className={`bg-[#405189] p-2 border w-20 mt-8 ml-4 rounded-xl text-white text-center `}>
                 Login 
               </Text>

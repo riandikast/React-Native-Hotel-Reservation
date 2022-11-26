@@ -35,11 +35,13 @@ export default function Login({navigation}) {
 
   const handleLogin = async () => {
     try {
-      getData();
-      dispatch(loginAcc({email: email, password: password}));
-    } catch (err) {}
 
-    Keyboard.dismiss();
+      dispatch(loginAcc({email: email, password: password}));
+      getData();
+    } catch (err) {
+
+    }
+    checkNavigator()
   };
 
   const getData = async () => {
@@ -47,6 +49,20 @@ export default function Login({navigation}) {
       (await AsyncStorage.getItem('@account').then(JSON.parse)) || [];
 
     dispatch(getAccountData({account: accountData}));
+  };
+
+  const checkNavigator = async () => {
+    const accountData = await AsyncStorage.getItem('@account').then(JSON.parse);
+    const navigator = await AsyncStorage.getItem('@temporaryNavigation');
+    accountData.forEach(acc => {
+      if (acc.isLogin === true) {
+        if (navigator === 'home') {
+          navigation.navigate('Home');
+        } else if (navigator === 'detail') {
+          navigation.navigate('Detail');
+        }
+      }
+    });
   };
 
   useEffect(() => {
