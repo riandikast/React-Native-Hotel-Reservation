@@ -11,8 +11,9 @@ import Favorite from './src/pages/Favorite';
 import Profile from './src/pages/Profile';
 import Settings from './src/pages/Settings';
 import Splashscreen from './src/pages/Splashscreen';
-import React, {useEffect} from 'react';
-import {Image} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {Image, TouchableHighlight, View, Text} from 'react-native';
+import axios from 'axios';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
