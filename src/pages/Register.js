@@ -45,6 +45,7 @@ export default function Register({navigation}) {
       lastname: lastname,
       email: email,
       password: password,
+      gender: 'Not set',
       isLogin: false,
     };
 

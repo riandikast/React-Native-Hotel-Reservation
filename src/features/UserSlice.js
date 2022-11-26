@@ -80,19 +80,21 @@ export const accountSlice = createSlice({
 
     loginAcc: (state, action) => {
       if (state.account.length === 0) {
-            CustomAlert(
-                  'Email or Password are Wrong',
-                  'center',
-                  require('../assets/Warning.png'),
-                );
-          }
+        CustomAlert(
+          'Email or Password are Wrong',
+          'center',
+          require('../assets/Warning.png'),
+        );
+      }
       state.account.forEach(acc => {
         var BreakException = {};
-        console.log('lo', action.payload.email);
         if (
           acc.email === action.payload.email &&
           acc.password === action.payload.password
         ) {
+          acc.isLogin = true;
+          AsyncStorage.setItem('@account', JSON.stringify(state.account));
+
           CustomAlert(
             'Login Successfull',
             'center',
@@ -108,8 +110,46 @@ export const accountSlice = createSlice({
         }
       });
     },
+
+    logoutAcc: (state, action) => {
+      state.account = action.payload.account;
+      state.account.forEach(acc => {
+        var BreakException = {};
+        if (acc.isLogin === true) {
+          acc.isLogin = false;
+          AsyncStorage.setItem('@account', JSON.stringify(state.account));
+          CustomAlert(
+            'Logout',
+            'center',
+            require('../assets/Success.png'),
+          );
+          throw BreakException;
+        } 
+      });
+    },
+
+    updateAcc: (state, action) => {
+      state.account = action.payload.account;
+      state.account.forEach(acc => {
+        if (acc.id === action.payload.id) {
+          acc.image = action.payload.image
+          acc.firstname = action.payload.firstname
+          acc.lastname = action.payload.lastname
+          acc.email = action.payload.email
+          acc.password = action.payload.password
+          acc.gender = action.payload.gender
+          AsyncStorage.setItem('@account', JSON.stringify(state.account));
+          // CustomAlert(
+          //   'Updated',
+          //   'center',
+          //   require('../assets/Success.png'),
+          // );
+          throw BreakException;
+        } 
+      });
+    },
   },
 });
 
-export const {addAcc, loginAcc, getAccountData} = accountSlice.actions;
+export const {addAcc, loginAcc, getAccountData, logoutAcc, updateAcc} = accountSlice.actions;
 export default accountSlice.reducer;
