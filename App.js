@@ -85,7 +85,7 @@ const TabNav = () => {
 function MyStack() {
   return (
     <Stack.Navigator screenOptions={{headerShown: false}}>
-      <Stack.Screen name="Splash" component={Splashscreen} />
+      {/* <Stack.Screen name="Splash" component={Splashscreen} /> */}
       <Stack.Screen name="Home" component={TabNav} />
       <Stack.Screen name="Register" component={Register} />
       <Stack.Screen name="Login" component={Login} />
