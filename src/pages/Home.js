@@ -9,20 +9,21 @@ import {
   SafeAreaView,
   TouchableOpacity,
 } from 'react-native';  
-  import * as React from 'react';
+  import { useState } from 'react';
   import DatePicker from 'react-native-date-picker'
   import {NavigationContainer} from '@react-navigation/native';
   import {createNativeStackNavigator} from '@react-navigation/native-stack';
   import AsyncStorage from '@react-native-async-storage/async-storage';
+  import Reactotron from 'reactotron-react-native';
 
   export default function Home({navigation}) {
-    const [dateIn, setDateIn] = React.useState(new Date());
-    const [dateOut, setDateOut] = React.useState(new Date());
-    const [modalIn, setModalIn] = React.useState(false);
-    const [modalOut, setModalOut] = React.useState(false);
-    const [destination, setDestination] = React.useState('');
-    const [data, setData] = React.useState();
-    const [inputSearch, setInputSearch] = React.useState('');
+    const [dateIn, setDateIn] = useState(new Date());
+    const [dateOut, setDateOut] = useState(new Date());
+    const [modalIn, setModalIn] = useState(false);
+    const [modalOut, setModalOut] = useState(false);
+    const [destination, setDestination] = useState('');
+    const [data, setData] = useState([]);
+    const [inputSearch, setInputSearch] = useState('');
 
     const setNavigator = async () => {
       try {
@@ -39,7 +40,7 @@ import {
       const options = {
         method: 'GET',
         headers: {
-          'X-RapidAPI-Key': 'de5ba7f7fdmsh8349ab37fa45433p1d4bdfjsnb8bc75ea1c68',
+          'X-RapidAPI-Key': 'e721593c35msha1107f39ce3305bp1f5ce2jsn0b3de96587f1',
           'X-RapidAPI-Host': 'hotels4.p.rapidapi.com'
         }
       };
@@ -54,28 +55,34 @@ import {
         const optionsList = {
           method: 'GET',
           headers: {
-            'X-RapidAPI-Key': 'de5ba7f7fdmsh8349ab37fa45433p1d4bdfjsnb8bc75ea1c68',
+            'X-RapidAPI-Key': 'e721593c35msha1107f39ce3305bp1f5ce2jsn0b3de96587f1',
             'X-RapidAPI-Host': 'hotels4.p.rapidapi.com'
           }
         };
         fetch(urlList, optionsList)
         .then(res => res.json())
-        .then(json => {
-          setData(json.data.body.searchResults.results)
-        })
+        .then(json => setData(json.data.body.searchResults.results))
         .catch(err => console.error('error:' + err));
     }
 
     const getList = () => {
-      return data?.map((i) => {
-      return (
-      <View className="flex-">
-        <Text>{data[i].name}</Text>
-      </View>
-      )}
-        )
-      }
-    console.log(data)
+      return data?.map(i => {
+        return (
+          <View className="z-10 bg-white rounded-xl my-3" key={i.name}>
+            {Reactotron.log(i.name)}
+            <Image source={i.optimizedThumbUrls.srpDesktop} className="w-[250px] h-40"/>
+            <View className="p-5">
+              <Text className='text-black text-lg font-semibold mb-1'>{i.name}</Text>
+              <Text className="text-[#405189] text-2xl font-bold">{i.ratePlan.price.current}</Text>
+              <Text className="text-md ml-1">/night</Text>
+
+            </View>
+          </View>
+  
+        );
+      });
+    };
+
       return (
         <SafeAreaView>
           <ScrollView>
@@ -150,26 +157,23 @@ import {
                 
                 {/* button search */}
                 <TouchableOpacity
-                  className="p-2 rounded-lg bg-emerald-500"
+                  className="p-2 rounded-lg bg-[#405189]"
                   onPress={fetchApiCall}
                   >
-                  <Text className="text-white text-xl text-center font-semibold">Searchaaaa</Text>
+                  <Text className="text-white text-xl text-center font-semibold">Search</Text>
                 </TouchableOpacity>
               </View>
               {/* end search */}
               
               {/* search results */}
-              <View className="bg-white p-4 rounded-lg">
-                {/* {data.map((i) => { */}
-                  {getList()}
-                {/* })} */}
+              <View>
+                {getList()}
               </View>
 
               {/* content */}
               <View className="bg-white p-4 rounded-lg">
                 <View className="mb-5">
-                  <Text className="text-black text-lg font-semibold mb-3">TOP DESTINATIONSaa</Text>
-                  {/* <Text className="text-black text-lg font-semibold mb-3">{data}</Text> */}
+                  <Text className="text-black text-lg font-semibold mb-3">TOP DESTINATIONSsssss</Text>
                   <ScrollView horizontal={true} className="snap-x">
                     <View className="snap-center">
                       <ImageBackground source={require('../assets/hotel.jpeg')} className="mr-3 w-44 h-40" imageStyle={{ borderRadius: 10}}>
