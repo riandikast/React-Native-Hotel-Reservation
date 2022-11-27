@@ -20,30 +20,76 @@ import {
     const [dateOut, setDateOut] = React.useState(new Date());
     const [modalIn, setModalIn] = React.useState(false);
     const [modalOut, setModalOut] = React.useState(false);
+    const [destination, setDestination] = React.useState('');
+    const [data, setData] = React.useState();
+    const [inputSearch, setInputSearch] = React.useState('');
 
     const setNavigator = async () => {
       try {
-          AsyncStorage.setItem('@temporaryNavigation', "home");
+        AsyncStorage.setItem('@temporaryNavigation', "home");
       }catch(err){
 
       }
       navigation.navigate('Login')
-    
     }
+
+    const fetchApiCall = () => {
+      const url = `https://hotels4.p.rapidapi.com/locations/search?query=${inputSearch}`;
+
+      const options = {
+        method: 'GET',
+        headers: {
+          'X-RapidAPI-Key': 'de5ba7f7fdmsh8349ab37fa45433p1d4bdfjsnb8bc75ea1c68',
+          'X-RapidAPI-Host': 'hotels4.p.rapidapi.com'
+        }
+      };
+
+      fetch(url, options)
+        .then(res => res.json())
+        .then(json => setDestination(json.suggestions[0].entities[0].destinationId))
+        .catch(err => console.error('error:' + err));
+
+        const urlList = `https://hotels4.p.rapidapi.com/properties/list?destinationId=${destination}&pageNumber=1&pageSize=5&checkIn=2022-11-24&checkOut=2022-11-26&adults1=1`;
+
+        const optionsList = {
+          method: 'GET',
+          headers: {
+            'X-RapidAPI-Key': 'de5ba7f7fdmsh8349ab37fa45433p1d4bdfjsnb8bc75ea1c68',
+            'X-RapidAPI-Host': 'hotels4.p.rapidapi.com'
+          }
+        };
+        fetch(urlList, optionsList)
+        .then(res => res.json())
+        .then(json => {
+          setData(json.data.body.searchResults.results)
+        })
+        .catch(err => console.error('error:' + err));
+    }
+
+    const getList = () => {
+      return data?.map((i) => {
+      return (
+      <View className="flex-">
+        <Text>{data[i].name}</Text>
+      </View>
+      )}
+        )
+      }
+    console.log(data)
       return (
         <SafeAreaView>
-          <View>
+          <ScrollView>
             <TouchableOpacity activeOpacity={1.0}>
               <Text
                 onPress={setNavigator}
                 className={`bg-[#405189] p-2 border w-20 mt-8 ml-4 rounded-xl text-white text-center `}>
-                Login 
+                Login
               </Text>
             </TouchableOpacity>
-            <ScrollView className="p-8">
+            <View className="p-8">
               {/* search */}
               <View className="bg-neutral-50 p-8 rounded-lg mb-5 relative">
-                <TextInput className="rounded-lg bg-white pl-12" placeholder="Where do you want to go?" value=''/>
+                <TextInput className="rounded-lg bg-white pl-12" placeholder="Where do you want to go?" onChangeText={setInputSearch}/>
                 <Image source={require('../assets/SearchOutline.png')} className="w-7 h-7 relative bottom-10 left-3" />
                 {/* input date */}
                 <View className="flex flex-row justify-between">
@@ -105,15 +151,25 @@ import {
                 {/* button search */}
                 <TouchableOpacity
                   className="p-2 rounded-lg bg-emerald-500"
+                  onPress={fetchApiCall}
                   >
-                  <Text className="text-white text-xl text-center font-semibold">Search</Text>
+                  <Text className="text-white text-xl text-center font-semibold">Searchaaaa</Text>
                 </TouchableOpacity>
+              </View>
+              {/* end search */}
+              
+              {/* search results */}
+              <View className="bg-white p-4 rounded-lg">
+                {/* {data.map((i) => { */}
+                  {getList()}
+                {/* })} */}
               </View>
 
               {/* content */}
               <View className="bg-white p-4 rounded-lg">
                 <View className="mb-5">
-                  <Text className="text-black text-lg font-semibold mb-3">TOP DESTINATIONS</Text>
+                  <Text className="text-black text-lg font-semibold mb-3">TOP DESTINATIONSaa</Text>
+                  {/* <Text className="text-black text-lg font-semibold mb-3">{data}</Text> */}
                   <ScrollView horizontal={true} className="snap-x">
                     <View className="snap-center">
                       <ImageBackground source={require('../assets/hotel.jpeg')} className="mr-3 w-44 h-40" imageStyle={{ borderRadius: 10}}>
@@ -176,8 +232,8 @@ import {
                   </ScrollView>
                 </View>
               </View>
-            </ScrollView>
-          </View>
+            </View>
+          </ScrollView>
         </SafeAreaView>
       );
     }
