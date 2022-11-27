@@ -15,7 +15,7 @@ import React, {useEffect, useState} from 'react';
 import {Image, TouchableHighlight, View, Text} from 'react-native';
 import axios from 'axios';
 import Detail from './src/pages/Detail';
-
+import ZoomImageDialog from './src/components/ZoomImageDialog';
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
@@ -39,6 +39,7 @@ const TabNav = () => {
               />
             );
           },
+          tabBarHideOnKeyboard: true,
         }}
       />
       <Tab.Screen
@@ -48,11 +49,12 @@ const TabNav = () => {
           tabBarIcon: ({focused, color, size}) => {
             return (
               <Image
-                style={{width: 35, height: 35, marginRight: 2, marginTop:4}}
+                style={{width: 35, height: 35, marginRight: 2, marginTop: 4}}
                 source={favoriteIcon}
               />
             );
           },
+          tabBarHideOnKeyboard: true,
         }}
       />
       <Tab.Screen
@@ -67,9 +69,13 @@ const TabNav = () => {
               />
             );
           },
+          tabBarHideOnKeyboard: true,
         }}
       />
-      <Tab.Screen name="Settings" component={Settings}      options={{
+      <Tab.Screen
+        name="Settings"
+        component={Settings}
+        options={{
           tabBarIcon: ({focused, color, size}) => {
             return (
               <Image
@@ -78,7 +84,9 @@ const TabNav = () => {
               />
             );
           },
-        }}/>
+          tabBarHideOnKeyboard: true,
+        }}
+      />
     </Tab.Navigator>
   );
 };
