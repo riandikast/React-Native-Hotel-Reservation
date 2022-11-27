@@ -80,6 +80,7 @@ export default function Settings({navigation}) {
           account: accountData,
           id: id,
           image: image,
+          password: password,
           firstname: firstname,
           lastname: lastname,
           email: email,
@@ -406,22 +407,23 @@ export default function Settings({navigation}) {
               source={require('../assets/Forward.png')}
             />
           </View>
+          <TouchableWithoutFeedback onPress={handleLogout} activeOpacity={1.0}>
+            <View className="bg-white mx-8 flex-row  border-black ">
+              <Text
+              
+                className="text-[#d72323] text-left my-3 text-xl ml-6 font-semibold">
+                Logout
+              </Text>
 
-          <View className="bg-white mx-8 flex-row  border-black ">
-            <Text
-              onPress={handleLogout}
-              className="text-[#d72323] text-left my-3 text-xl ml-6 font-semibold">
-              Logout
-            </Text>
-
-            <Image
-              className={'w-6 h-6 ml-auto mt-4 mr-3 '}
-              source={require('../assets/Forward.png')}
-            />
-          </View>
+              <Image
+                className={'w-6 h-6 ml-auto mt-4 mr-3 '}
+                source={require('../assets/Forward.png')}
+              />
+            </View>
+          </TouchableWithoutFeedback>
         </View>
       </TouchableOpacity>
-      {!isZoom && (pickImage())}
+      {!isZoom && pickImage()}
     </SafeAreaView>
   );
 }

@@ -40,6 +40,7 @@ const TabNav = () => {
             );
           },
           tabBarHideOnKeyboard: true,
+          unmountOnBlur: true,
         }}
       />
       <Tab.Screen
@@ -55,6 +56,7 @@ const TabNav = () => {
             );
           },
           tabBarHideOnKeyboard: true,
+          unmountOnBlur: true,
         }}
       />
       <Tab.Screen
@@ -70,6 +72,7 @@ const TabNav = () => {
             );
           },
           tabBarHideOnKeyboard: true,
+          unmountOnBlur: true,
         }}
       />
       <Tab.Screen
@@ -85,6 +88,7 @@ const TabNav = () => {
             );
           },
           tabBarHideOnKeyboard: true,
+          unmountOnBlur: true,
         }}
       />
     </Tab.Navigator>
