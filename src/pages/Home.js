@@ -9,41 +9,97 @@ import {
   SafeAreaView,
   TouchableOpacity,
 } from 'react-native';  
-  import * as React from 'react';
+  import { useState } from 'react';
   import DatePicker from 'react-native-date-picker'
   import {NavigationContainer} from '@react-navigation/native';
   import {createNativeStackNavigator} from '@react-navigation/native-stack';
   import AsyncStorage from '@react-native-async-storage/async-storage';
+  import Reactotron from 'reactotron-react-native';
 
   export default function Home({navigation}) {
-    const [dateIn, setDateIn] = React.useState(new Date());
-    const [dateOut, setDateOut] = React.useState(new Date());
-    const [modalIn, setModalIn] = React.useState(false);
-    const [modalOut, setModalOut] = React.useState(false);
+    const [dateIn, setDateIn] = useState(new Date());
+    const [dateOut, setDateOut] = useState(new Date());
+    const [modalIn, setModalIn] = useState(false);
+    const [modalOut, setModalOut] = useState(false);
+    const [destination, setDestination] = useState('');
+    const [data, setData] = useState([]);
+    const [inputSearch, setInputSearch] = useState('');
 
     const setNavigator = async () => {
       try {
-          AsyncStorage.setItem('@temporaryNavigation', "home");
+        AsyncStorage.setItem('@temporaryNavigation', "home");
       }catch(err){
 
       }
       navigation.navigate('Login')
-    
     }
+
+    const fetchApiCall = () => {
+      const url = `https://hotels4.p.rapidapi.com/locations/search?query=${inputSearch}`;
+
+      const options = {
+        method: 'GET',
+        headers: {
+          'X-RapidAPI-Key': 'e721593c35msha1107f39ce3305bp1f5ce2jsn0b3de96587f1',
+          'X-RapidAPI-Host': 'hotels4.p.rapidapi.com'
+        }
+      };
+
+      fetch(url, options)
+        .then(res => res.json())
+        .then(json => setDestination(json.suggestions[0].entities[0].destinationId))
+        .catch(err => console.error('error:' + err));
+
+        const urlList = `https://hotels4.p.rapidapi.com/properties/list?destinationId=${destination}&pageNumber=1&pageSize=5&checkIn=2022-11-24&checkOut=2022-11-26&adults1=1`;
+
+        const optionsList = {
+          method: 'GET',
+          headers: {
+            'X-RapidAPI-Key': 'e721593c35msha1107f39ce3305bp1f5ce2jsn0b3de96587f1',
+            'X-RapidAPI-Host': 'hotels4.p.rapidapi.com'
+          }
+        };
+        fetch(urlList, optionsList)
+        .then(res => res.json())
+        .then(json => setData(json.data.body.searchResults.results))
+        .catch(err => console.error('error:' + err));
+    }
+
+    const getList = () => {
+      return data?.map(i => {
+        return (
+          <TouchableOpacity 
+            className="z-10 bg-white rounded-xl my-3"  
+            key={i.id}
+            onPress={ ()=> navigation.navigate('Detail', {hotelId: i.id})}
+          >
+            {Reactotron.log(i.name)}
+            <Image source={{uri: i.optimizedThumbUrls.srpDesktop}} className="w-full h-44 object-contain"/>
+            <View className="p-5">
+              <Text className='text-black text-lg font-semibold mb-1'>{i.name}</Text>
+              <Text className="text-[#405189] text-2xl font-bold">{i.ratePlan.price.current}</Text>
+              <Text className="text-md ml-1">/night</Text>
+            </View>
+          </TouchableOpacity>
+  
+        );
+      });
+    };
+
       return (
         <SafeAreaView>
-          <View>
+          <ScrollView>
             <TouchableOpacity activeOpacity={1.0}>
               <Text
                 onPress={setNavigator}
                 className={`bg-[#405189] p-2 border w-20 mt-8 ml-4 rounded-xl text-white text-center `}>
-                Login 
+                Login
               </Text>
             </TouchableOpacity>
-            <ScrollView className="p-8">
+            <View className="p-8">
               {/* search */}
               <View className="bg-neutral-50 p-8 rounded-lg mb-5 relative">
-                <TextInput className="rounded-lg bg-white pl-12" placeholder="Where do you want to go?" value=''/>
+                <TextInput className="rounded-lg bg-white pl-12" placeholder="Where do you want to go?" onChangeText={setInputSearch}/>
                 <Image source={require('../assets/SearchOutline.png')} className="w-7 h-7 relative bottom-10 left-3" />
                 {/* input date */}
                 <View className="flex flex-row justify-between">
@@ -104,10 +160,17 @@ import {
                 
                 {/* button search */}
                 <TouchableOpacity
-                  className="p-2 rounded-lg bg-emerald-500"
+                  className="p-2 rounded-lg bg-[#405189]"
+                  onPress={fetchApiCall}
                   >
                   <Text className="text-white text-xl text-center font-semibold">Search</Text>
                 </TouchableOpacity>
+              </View>
+              {/* end search */}
+              
+              {/* search results */}
+              <View>
+                {getList()}
               </View>
 
               {/* content */}
@@ -120,10 +183,7 @@ import {
                           <Text className="text-xl text-white absolute bottom-3 left-4">Bali</Text>
                       </ImageBackground>
                     </View>
-                    <View 
-                      className="snap-center"
-                      onStartShouldSetResponder={() => navigation.navigate('Detail')}
-                    >
+                    <View className="snap-center">
                       <ImageBackground source={require('../assets/hotel.jpeg')} className="mr-3 w-44 h-40" imageStyle={{ borderRadius: 10}}>
                         <Text className="text-xl text-white absolute bottom-3 left-4">Yogyakarta</Text>
                       </ImageBackground>
@@ -176,8 +236,8 @@ import {
                   </ScrollView>
                 </View>
               </View>
-            </ScrollView>
-          </View>
+            </View>
+          </ScrollView>
         </SafeAreaView>
       );
     }
