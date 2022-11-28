@@ -80,7 +80,6 @@ export default function Settings({navigation}) {
           account: accountData,
           id: id,
           image: image,
-          password: password,
           firstname: firstname,
           lastname: lastname,
           email: email,
@@ -285,15 +284,22 @@ export default function Settings({navigation}) {
         </>
       )}
 
-      <View className="bg-[#405189]">
-        <TouchableWithoutFeedback activeOpacity={1.0}>
-          <Image
-            className={'w-10 h-10 p-3 -mb-8 mt-4 ml-4 relative'}
-            source={require('../assets/Back.png')}
-          />
-        </TouchableWithoutFeedback>
+      <View className="bg-[#405189]  flex  flex-row">
+        <View className="mb-4 grow">
+          <TouchableWithoutFeedback
+            onPress={() => navigation.goBack()}
+            activeOpacity={1.0}>
+            <Image
+              className={'w-10 h-10 p-3 mt-4 ml-4'}
+              source={require('../assets/Back.png')}
+            />
+          </TouchableWithoutFeedback>
+        </View>
 
-        <Text className="text-white text-center mb-6 text-xl ">Settings</Text>
+        <View className=" flex-1 justify-center ">
+          <Text className="text-white text-2xl ">Settings</Text>
+        </View>
+        <View className="grow"></View>
       </View>
 
       <TouchableOpacity activeOpacity={1.0}>
@@ -391,6 +397,20 @@ export default function Settings({navigation}) {
               />
             </View>
           </View>
+          <TouchableWithoutFeedback
+            onPress={() => navigation.navigate('ChangePassword')}
+            activeOpacity={1.0}>
+            <View className="bg-white mx-8 flex-row  border-black ">
+              <Text className="text-[#d72323] text-left my-3 text-xl ml-6 font-semibold">
+                Change password
+              </Text>
+
+              <Image
+                className={'w-6 h-6 ml-auto mt-4 mr-3 '}
+                source={require('../assets/Forward.png')}
+              />
+            </View>
+          </TouchableWithoutFeedback>
         </View>
         <View>
           <Text className="text-[#405189] underline text-3xl mt-8 mb-1 ml-10 font-bold">
@@ -409,9 +429,7 @@ export default function Settings({navigation}) {
           </View>
           <TouchableWithoutFeedback onPress={handleLogout} activeOpacity={1.0}>
             <View className="bg-white mx-8 flex-row  border-black ">
-              <Text
-              
-                className="text-[#d72323] text-left my-3 text-xl ml-6 font-semibold">
+              <Text className="text-[#d72323] text-left my-3 text-xl ml-6 font-semibold">
                 Logout
               </Text>
 

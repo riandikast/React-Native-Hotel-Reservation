@@ -8,6 +8,8 @@ import {
   View,
   Keyboard,
   TouchableOpacity,
+  TouchableWithoutFeedback,
+  Image
 } from 'react-native';
 import FlashMessage from 'react-native-flash-message';
 import * as React from 'react';
@@ -27,6 +29,7 @@ export default function Register({navigation}) {
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
   const [isinput, setIsInput] = useState(false);
+  const [isRegistered, setIsRegistered] = useState(false);
   const dispatch = useDispatch();
 
   const checkTextInput = () => {
@@ -38,6 +41,7 @@ export default function Register({navigation}) {
   };
 
   const handleRegis = async () => {
+ 
     let acc = {
       id: id + 1,
       image: null,
@@ -46,13 +50,13 @@ export default function Register({navigation}) {
       email: email,
       password: password,
       gender: 'Not set',
-      isLogin: false,
     };
 
     try {
       if (firstname && lastname && email && password) {
-        getLastID();
         dispatch(addAcc(acc, id + 1));
+        getLastID();
+        setIsRegistered(true)
       }
       const data = await AsyncStorage.getItem('@account').then(JSON.parse);
 
@@ -72,6 +76,10 @@ export default function Register({navigation}) {
     dispatch(getAccountData({account: accountData}));
 
     setID(Number(data));
+    if (id === data){
+      setIsRegistered(true)
+    }
+
   };
   useEffect(() => {
     getLastID();
@@ -81,9 +89,25 @@ export default function Register({navigation}) {
     checkTextInput();
   }, [firstname, lastname, email, password]);
 
+  useEffect(() => {
+    if (isRegistered){
+      navigation.navigate('Login');
+    }
+  }, [id]);
+
   return (
     <View className="flex-1 flex-col items-center justify-center">
-      <View className="">
+        <View className="self-start grow justify-start mt-12  ml-8 ">
+          <TouchableWithoutFeedback
+            onPress={() => navigation.goBack()}
+            activeOpacity={1.0}>
+            <Image
+              className={'w-10 h-10 p-3 mt-4 ml-4'}
+              source={require('../assets/BlueBack.png')}
+            />
+          </TouchableWithoutFeedback>
+        </View>
+      <View className="flex-col mb-12">
         <Text
           className={`text-4xl text-semibold p-2 text-[#405189] text-left mb-4 -ml-2 opacity-100 `}>
           Register
@@ -137,6 +161,7 @@ export default function Register({navigation}) {
           </View>
         </TouchableOpacity>
       </View>
+      <View className='grow'></View>
     </View>
   );
 }

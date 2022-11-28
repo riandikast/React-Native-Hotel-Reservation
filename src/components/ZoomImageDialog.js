@@ -20,7 +20,6 @@ export default function ZoomImageDialog({
   onClosed,
   backClick,
   imageSource,
-
 }) {
   const [fadeAnim] = useState(new Animated.Value(0));
 
@@ -28,30 +27,36 @@ export default function ZoomImageDialog({
     Animated.timing(fadeAnim, {
       toValue: 1,
       duration: 1000,
-      useNativeDriver: false
+      useNativeDriver: false,
     }).start();
   }, []);
 
   return (
-
     <Animated.View className="flex flex-col  ">
       <View className="z-10 bg-[#405189] flex flex-row">
-        <TouchableWithoutFeedback onPress={backClick} activeOpacity={1.0}>
-          <Image
-            className={'w-10 h-10 p-3  mt-3 ml-4 relative'}
-            source={require('../assets/Back.png')}
-          />
-        </TouchableWithoutFeedback>
+        <View className="grow mb-4">
+          <TouchableWithoutFeedback onPress={backClick} activeOpacity={1.0}>
+            <Image
+              className={'w-10 h-10 p-3  mt-3 ml-4 relative'}
+              source={require('../assets/Back.png')}
+            />
+          </TouchableWithoutFeedback>
+        </View>
 
-        <Text className="text-white text-center ml-auto mt-4 mb-5 justify-center text-xl ">
-          {text}
-        </Text>
-        <TouchableWithoutFeedback onPress={editClick} activeOpacity={1.0}>
-          <Image
-            className={'w-7 h-7 p-3  mt-5 mr-6 ml-auto'}
-            source={require('../assets/EditIcon.png')}
-          />
-        </TouchableWithoutFeedback>
+        <View className="justify-center flex-1 mt-4">
+          <Text className="text-white text-center  mb-5 text-xl ">
+            {text}
+          </Text>
+        </View>
+
+        <View className="grow">
+          <TouchableWithoutFeedback onPress={editClick} activeOpacity={1.0}>
+            <Image
+              className={'w-7 h-7 p-3  mt-5 mr-8 ml-auto'}
+              source={require('../assets/EditIcon.png')}
+            />
+          </TouchableWithoutFeedback>
+        </View>
       </View>
 
       <View className="h-screen bg-black -mt-16">
@@ -62,6 +67,5 @@ export default function ZoomImageDialog({
         </View>
       </View>
     </Animated.View>
- 
   );
 }
