@@ -11,6 +11,7 @@ import Favorite from './src/pages/Favorite';
 import Profile from './src/pages/Profile';
 import Settings from './src/pages/Settings';
 import Splashscreen from './src/pages/Splashscreen';
+import ChangePassword from './src/pages/ChangePassword';
 import React, {useEffect, useState} from 'react';
 import {Image, TouchableHighlight, View, Text} from 'react-native';
 import axios from 'axios';
@@ -103,6 +104,7 @@ function MyStack() {
       <Stack.Screen name="Register" component={Register} />
       <Stack.Screen name="Login" component={Login} />
       <Stack.Screen name="Detail" component={Detail} />
+      <Stack.Screen name="ChangePassword" component={ChangePassword} />
     </Stack.Navigator>
   );
 }

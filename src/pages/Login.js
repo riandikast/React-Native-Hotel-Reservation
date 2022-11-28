@@ -7,6 +7,7 @@ import {
   Keyboard,
   TouchableOpacity,
   Image,
+  TouchableWithoutFeedback
 } from 'react-native';
 
 import * as React from 'react';
@@ -54,7 +55,8 @@ export default function Login({navigation}) {
   const checkNavigator = async () => {
     const accountData = await AsyncStorage.getItem('@account').then(JSON.parse);
     const navigator = await AsyncStorage.getItem('@temporaryNavigation');
-    accountData.forEach(acc => {
+
+    accountData?.forEach(acc => {
       if (acc.isLogin === true) {
         if (navigator === 'home') {
           navigation.navigate('Home');
@@ -75,7 +77,18 @@ export default function Login({navigation}) {
 
   return (
     <View className="flex-1 flex-col items-center justify-center">
-      <View className="">
+        <View className="self-start grow justify-start mt-12  ml-8 ">
+          <TouchableWithoutFeedback
+            onPress={() => navigation.goBack()}
+            activeOpacity={1.0}>
+            <Image
+              className={'w-10 h-10 p-3 mt-4 ml-4'}
+              source={require('../assets/BlueBack.png')}
+            />
+          </TouchableWithoutFeedback>
+        </View>
+      <View className="flex-col  mb-12">
+    
         <Text
           className={`text-4xl text-semibold p-2 text-[#405189] text-left mb-4 -ml-2 opacity-100 `}>
           Login
@@ -115,6 +128,7 @@ export default function Login({navigation}) {
           </View>
         </TouchableOpacity>
       </View>
+      <View className='grow'></View>
     </View>
   );
 }
