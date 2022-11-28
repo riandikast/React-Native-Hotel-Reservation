@@ -274,174 +274,182 @@ export default function Settings({navigation}) {
   }, [imagePicker, isZoom]);
 
   return (
-    <SafeAreaView>
-      {isZoom && (
-        <>
-          <View className="z-50">
-            {pickImage()}
-            {zoomLayout()}
-          </View>
-        </>
-      )}
+    <SafeAreaView className="flex-col">
+      <View className="flex-col">
+        {isZoom && (
+          <>
+            <View className="z-50">
+              {pickImage()}
+              {zoomLayout()}
+            </View>
+          </>
+        )}
 
-      <View className="bg-[#405189]  flex  flex-row">
-        <View className="mb-4 grow">
-          <TouchableWithoutFeedback
-            onPress={() => navigation.goBack()}
-            activeOpacity={1.0}>
-            <Image
-              className={'w-10 h-10 p-3 mt-4 ml-4'}
-              source={require('../assets/Back.png')}
-            />
-          </TouchableWithoutFeedback>
-        </View>
-
-        <View className=" flex-1 justify-center ">
-          <Text className="text-white text-2xl ">Settings</Text>
-        </View>
-        <View className="grow"></View>
-      </View>
-
-      <TouchableOpacity activeOpacity={1.0}>
-        <View className="flex-1 flex-row justify-center ">
-          <TouchableWithoutFeedback
-            activeOpacity={1.0}
-            onPress={() => zoomImage()}>
-            <Image
-              className={'w-44 h-44  mt-10 rounded-full border-black border-2 '}
-              source={getImageUser()}
-            />
-          </TouchableWithoutFeedback>
-        </View>
-        <View className="justify-center items-center">
-          <TouchableWithoutFeedback
-            activeOpacity={1.0}
-            onPress={() => setImagePicker(true)}>
-            <Image
-              className={'w-20 h-20  mt-36 ml-28 '}
-              source={require('../assets/EditIcon.png')}
-            />
-          </TouchableWithoutFeedback>
-        </View>
-
-        <View>
-          <Text className="text-[#405189] underline text-3xl mt-4 mb-1 ml-10  font-bold">
-            Account
-          </Text>
-          <View className="bg-white mx-8 flex-row   border-black ">
-            <Text className="text-black text-left my-3 text-xl ml-6 font-semibold">
-              First Name
-            </Text>
-            <TextInput
-              className="text-black text-left my-1 text-xl ml-auto mr-12 opacity-50"
-              onChangeText={value => {
-                setFirstname(value);
-              }}>
-              {firstname}
-            </TextInput>
+        <View className="bg-[#405189]  flex  flex-row">
+          <View className="mb-4 grow">
+            <TouchableWithoutFeedback
+              onPress={() => navigation.goBack()}
+              activeOpacity={1.0}>
+              <Image
+                className={'w-10 h-10 p-3 mt-4 ml-4'}
+                source={require('../assets/Back.png')}
+              />
+            </TouchableWithoutFeedback>
           </View>
 
-          <View className="bg-white mx-8 flex-row   border-black ">
-            <Text className="text-black text-left my-3 text-xl ml-6 font-semibold">
-              Last Name
-            </Text>
-            <TextInput
-              className="text-black text-left my-1 text-xl ml-auto mr-12 opacity-50"
-              onChangeText={value => {
-                setLastname(value);
-              }}>
-              {lastname}
-            </TextInput>
+          <View className=" flex-1 justify-center ">
+            <Text className="text-white text-2xl ">Settings</Text>
           </View>
+          <View className="grow"></View>
+        </View>
 
-          <View className="bg-white mx-8 flex-row  border-black ">
-            <Text className="text-black text-left my-3 text-xl ml-6 font-semibold">
-              Email
-            </Text>
-            <TextInput
-              className="text-black text-left my-1 text-xl ml-auto mr-12 opacity-50"
-              onChangeText={value => {
-                setEmail(value);
-              }}>
-              {email}
-            </TextInput>
-          </View>
-          <View className="bg-white mx-8 flex-row  border-black ">
-            <Text className="text-black text-left my-3 text-xl ml-6 font-semibold">
-              Gender
-            </Text>
-            <View className="ml-auto">
-              <SelectDropdown
-                defaultValue={gender}
-                defaultButtonText={gender}
-                renderDropdownIcon={isOpened => {
-                  return (
-                    <Image
-                      className="h-4 w-4 mr-3 -ml-36"
-                      source={isOpened ? openedDropdownIcon : dropdownIcon}
+        <View >
+          <TouchableOpacity activeOpacity={1.0}>
+            <View className="mb-auto">
+              <View className="flex-1 flex-row justify-center ">
+                <TouchableWithoutFeedback
+                  activeOpacity={1.0}
+                  onPress={() => zoomImage()}>
+                  <Image
+                    className={
+                      'w-44 h-44  mt-10 rounded-full border-black border-2 '
+                    }
+                    source={getImageUser()}
+                  />
+                </TouchableWithoutFeedback>
+              </View>
+              <View className="justify-center items-center">
+                <TouchableWithoutFeedback
+                  activeOpacity={1.0}
+                  onPress={() => setImagePicker(true)}>
+                  <Image
+                    className={'w-20 h-20  mt-36 ml-28 '}
+                    source={require('../assets/EditIcon.png')}
+                  />
+                </TouchableWithoutFeedback>
+              </View>
+
+              <View>
+                <Text className="text-[#405189] underline text-2xl mt-4 mb-1 ml-10  font-bold">
+                  Account
+                </Text>
+                <View className="bg-white mx-8 flex-row   border-black ">
+                  <Text className="text-black text-left my-3 text-xl ml-6 font-semibold">
+                    First Name
+                  </Text>
+                  <TextInput
+                    className="text-black text-left my-1 text-xl ml-auto mr-12 opacity-50"
+                    onChangeText={value => {
+                      setFirstname(value);
+                    }}>
+                    {firstname}
+                  </TextInput>
+                </View>
+
+                <View className="bg-white mx-8 flex-row   border-black ">
+                  <Text className="text-black text-left my-3 text-xl ml-6 font-semibold">
+                    Last Name
+                  </Text>
+                  <TextInput
+                    className="text-black text-left my-1 text-xl ml-auto mr-12 opacity-50"
+                    onChangeText={value => {
+                      setLastname(value);
+                    }}>
+                    {lastname}
+                  </TextInput>
+                </View>
+
+                <View className="bg-white mx-8 flex-row  border-black ">
+                  <Text className="text-black text-left my-3 text-xl ml-6 font-semibold">
+                    Email
+                  </Text>
+                  <TextInput
+                    className="text-black text-left my-1 text-xl ml-auto mr-12 opacity-50"
+                    onChangeText={value => {
+                      setEmail(value);
+                    }}>
+                    {email}
+                  </TextInput>
+                </View>
+                <View className="bg-white mx-8 flex-row  border-black ">
+                  <Text className="text-black text-left my-3 text-xl ml-6 font-semibold">
+                    Gender
+                  </Text>
+                  <View className="ml-auto">
+                    <SelectDropdown
+                      defaultValue={gender}
+                      defaultButtonText={gender}
+                      renderDropdownIcon={isOpened => {
+                        return (
+                          <Image
+                            className="h-4 w-4 mr-3 -ml-36"
+                            source={
+                              isOpened ? openedDropdownIcon : dropdownIcon
+                            }
+                          />
+                        );
+                      }}
+                      buttonTextStyle={{opacity: 50, color: '#fffff'}}
+                      buttonStyle={{backgroundColor: '#ffffff'}}
+                      data={genderOption}
+                      onSelect={(selectedItem, index) => {
+                        setGender(selectedItem);
+                      }}
+                      buttonTextAfterSelection={(selectedItem, index) => {
+                        return selectedItem;
+                      }}
+                      rowTextForSelection={(item, index) => {
+                        return item;
+                      }}
                     />
-                  );
-                }}
-                buttonTextStyle={{opacity: 50, color: '#fffff'}}
-                buttonStyle={{backgroundColor: '#ffffff'}}
-                data={genderOption}
-                onSelect={(selectedItem, index) => {
-                  setGender(selectedItem);
-                }}
-                buttonTextAfterSelection={(selectedItem, index) => {
-                  return selectedItem;
-                }}
-                rowTextForSelection={(item, index) => {
-                  return item;
-                }}
-              />
-            </View>
-          </View>
-          <TouchableWithoutFeedback
-            onPress={() => navigation.navigate('ChangePassword')}
-            activeOpacity={1.0}>
-            <View className="bg-white mx-8 flex-row  border-black ">
-              <Text className="text-[#d72323] text-left my-3 text-xl ml-6 font-semibold">
-                Change password
-              </Text>
+                  </View>
+                </View>
+              </View>
+              <View>
+                <Text className="text-[#405189] underline text-2xl mt-8 mb-1 ml-10 font-bold">
+                  Privacy and Security
+                </Text>
 
-              <Image
-                className={'w-6 h-6 ml-auto mt-4 mr-3 '}
-                source={require('../assets/Forward.png')}
-              />
+                <TouchableWithoutFeedback
+                  onPress={() => navigation.navigate('ChangePassword')}
+                  activeOpacity={1.0}>
+                  <View className="bg-white mx-8 flex-row  border-black ">
+                    <Text className="text-[#d72323] text-left my-3 text-xl ml-6 font-semibold">
+                      Change password
+                    </Text>
+
+                    <Image
+                      className={'w-6 h-6 ml-auto mt-4 mr-3 '}
+                      source={require('../assets/Forward.png')}
+                    />
+                  </View>
+                </TouchableWithoutFeedback>
+              </View>
             </View>
-          </TouchableWithoutFeedback>
+
+            <View className="">
+              
+              <TouchableWithoutFeedback
+                className="items-end"
+                onPress={handleLogout}
+                activeOpacity={1.0}>
+                <View className="bg-white mx-8 flex-row  border-black ">
+                  <Text className="text-[#d72323] text-left my-3 text-xl ml-6 font-semibold">
+                    Logout
+                  </Text>
+
+                  <Image
+                    className={'w-6 h-6 ml-auto mt-4 mr-3 '}
+                    source={require('../assets/Forward.png')}
+                  />
+                </View>
+              </TouchableWithoutFeedback>
+            </View>
+
+          </TouchableOpacity>
         </View>
-        <View>
-          <Text className="text-[#405189] underline text-3xl mt-8 mb-1 ml-10 font-bold">
-            Support
-          </Text>
-
-          <View className="bg-white mx-8 flex-row  border-black ">
-            <Text className="text-black text-left my-3 text-xl ml-6 font-semibold">
-              Terms and Policy
-            </Text>
-
-            <Image
-              className={'w-6 h-6 ml-auto mt-4 mr-3 '}
-              source={require('../assets/Forward.png')}
-            />
-          </View>
-          <TouchableWithoutFeedback onPress={handleLogout} activeOpacity={1.0}>
-            <View className="bg-white mx-8 flex-row  border-black ">
-              <Text className="text-[#d72323] text-left my-3 text-xl ml-6 font-semibold">
-                Logout
-              </Text>
-
-              <Image
-                className={'w-6 h-6 ml-auto mt-4 mr-3 '}
-                source={require('../assets/Forward.png')}
-              />
-            </View>
-          </TouchableWithoutFeedback>
-        </View>
-      </TouchableOpacity>
-      {!isZoom && pickImage()}
+        {!isZoom && pickImage()}
+      </View>
     </SafeAreaView>
   );
 }
