@@ -70,7 +70,7 @@ export default function ChangePassword({navigation}) {
   };
 
   const handleUpdatePassword = async () => {
-    getData();
+
     if (oldPass !== newPass) {
       setIsPassChanged(true);
     }
@@ -82,6 +82,7 @@ export default function ChangePassword({navigation}) {
       dispatch(
         updatePassword({account: accountData, id: userID, password: newPass}),
       );
+      getData();
     } catch (err) {}
   };
 
