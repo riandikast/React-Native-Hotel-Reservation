@@ -8,11 +8,12 @@ import {
   ScrollView,
   SafeAreaView,
   TouchableOpacity,
+  useWindowDimensions,
 } from 'react-native';
   import { useEffect, useState } from 'react';
   import * as React from 'react';
-  // import HTMLView from 'react-native-htmlview';
-import axios from 'axios';
+  import RenderHtml from 'react-native-render-html';
+  import { getHotelDetail } from '../features/hotelServices';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -25,6 +26,8 @@ export default function Detail({navigation, route}) {
   const [hotel, setHotel] = useState([])
   const {hotelId} = route.params;
   const id = JSON.stringify(hotelId);
+  const { width } = useWindowDimensions();
+
   const handleBooking = async () => {
     try {
       const accountData = await AsyncStorage.getItem('@account').then(
@@ -41,25 +44,15 @@ export default function Detail({navigation, route}) {
     } catch (err) {}
   };
 
+  const getDetail = async () => {
+    const detail = await getHotelDetail({id});
+    setHotel([detail]);
+  }
   useEffect(() => {
-
-    const url = `https://hotels4.p.rapidapi.com/properties/get-details?id=${id}`;
-
-    const options = {
-      method: 'GET',
-      headers: {
-        'X-RapidAPI-Key': 'e721593c35msha1107f39ce3305bp1f5ce2jsn0b3de96587f1',
-        'X-RapidAPI-Host': 'hotels4.p.rapidapi.com'
-      }
-    };
-
-    fetch(url, options)
-      .then(res => res.json())
-      .then(json => setHotel([json.data.body]))
-      .catch(err => console.error('error:' + err));
+    getDetail();
   }, [])
-  console.log(hotel)
-  const getDetail = () => {
+
+  const hotelDetail = () => {
     return hotel?.map(i => { 
       return (
         <View key={i.pdpHeader.hotelId}>
@@ -91,15 +84,12 @@ export default function Detail({navigation, route}) {
           </ImageBackground>
 
           {/* about */}
-          <View className="my-4 p-5">
+          <View className="my-3 p-5">
             <Text className="text-black text-xl font-semibold mb-3">ABOUT</Text>
             {i.smallPrint.policies?.map(item => {
-              // const htmlAbout = `${item}`;
+              const htmlAbout = {html: `${item}`};
               return (
-                <Text>{item}</Text>
-                // <HTMLView
-                //   value={htmlAbout}
-                // />
+                <RenderHtml source={htmlAbout} contentWidth={width}/>
               )
             })}
           </View>
@@ -135,16 +125,18 @@ export default function Detail({navigation, route}) {
 
   return (
     <SafeAreaView>
-      <ScrollView className="relative">
-        {getDetail()}
-        {/* button booking */}
-        <TouchableOpacity activeOpacity={1.0}>
-          <Text
-            className={`bg-[#405189] fixed bottom-2 w-11/12 mx-auto p-2 rounded-lg text-white text-xl font-bold text-center `} onPress={handleBooking}>
-            Book this Hotel
-          </Text>
-        </TouchableOpacity>
+      <ScrollView className="mb-10">
+        {hotelDetail()}
       </ScrollView>
+      {/* button booking */}
+      <TouchableOpacity activeOpacity={1.0}>
+        <Text
+          className="bg-[#405189] fixed bottom-14 w-11/12 mx-auto p-2 rounded-lg text-white text-xl font-bold text-center"
+          onPress={handleBooking}
+        >
+          Book this Hotel
+        </Text>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 }

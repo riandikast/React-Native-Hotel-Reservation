@@ -15,15 +15,16 @@ import {
   import {createNativeStackNavigator} from '@react-navigation/native-stack';
   import AsyncStorage from '@react-native-async-storage/async-storage';
   import Reactotron from 'reactotron-react-native';
+import { getSearchList, searchQuery } from '../features/hotelServices';
 
   export default function Home({navigation}) {
     const [dateIn, setDateIn] = useState(new Date());
     const [dateOut, setDateOut] = useState(new Date());
     const [modalIn, setModalIn] = useState(false);
     const [modalOut, setModalOut] = useState(false);
-    const [destination, setDestination] = useState('');
     const [data, setData] = useState([]);
     const [inputSearch, setInputSearch] = useState('');
+    const [inputGuest, setInputGuest] = useState('');
 
     const setNavigator = async () => {
       try {
@@ -34,35 +35,17 @@ import {
       navigation.navigate('Login')
     }
 
-    const fetchApiCall = () => {
-      const url = `https://hotels4.p.rapidapi.com/locations/search?query=${inputSearch}`;
-
-      const options = {
-        method: 'GET',
-        headers: {
-          'X-RapidAPI-Key': 'e721593c35msha1107f39ce3305bp1f5ce2jsn0b3de96587f1',
-          'X-RapidAPI-Host': 'hotels4.p.rapidapi.com'
+    const fetchApiCall = async () => {
+      const responseQuery = await searchQuery({inputSearch});
+      const searchList = await getSearchList(
+        {
+          destination: responseQuery, 
+          checkIn: formatDate(dateIn.toISOString()), 
+          checkOut: formatDate(dateOut.toISOString()), 
+          guest: inputGuest
         }
-      };
-
-      fetch(url, options)
-        .then(res => res.json())
-        .then(json => setDestination(json.suggestions[0].entities[0].destinationId))
-        .catch(err => console.error('error:' + err));
-
-        const urlList = `https://hotels4.p.rapidapi.com/properties/list?destinationId=${destination}&pageNumber=1&pageSize=5&checkIn=2022-11-24&checkOut=2022-11-26&adults1=1`;
-
-        const optionsList = {
-          method: 'GET',
-          headers: {
-            'X-RapidAPI-Key': 'e721593c35msha1107f39ce3305bp1f5ce2jsn0b3de96587f1',
-            'X-RapidAPI-Host': 'hotels4.p.rapidapi.com'
-          }
-        };
-        fetch(urlList, optionsList)
-        .then(res => res.json())
-        .then(json => setData(json.data.body.searchResults.results))
-        .catch(err => console.error('error:' + err));
+      );
+      setData(searchList);
     }
 
     const getList = () => {
@@ -85,6 +68,19 @@ import {
         );
       });
     };
+    function formatDate(date) {
+      var d = new Date(date),
+          month = '' + (d.getMonth() + 1),
+          day = '' + d.getDate(),
+          year = d.getFullYear();
+  
+      if (month.length < 2) 
+          month = '0' + month;
+      if (day.length < 2) 
+          day = '0' + day;
+  
+      return [year, month, day].join('-');
+  }
 
       return (
         <SafeAreaView>
@@ -93,13 +89,13 @@ import {
               <Text
                 onPress={setNavigator}
                 className={`bg-[#405189] p-2 border w-20 mt-8 ml-4 rounded-xl text-white text-center `}>
-                Login
+                Loginss
               </Text>
             </TouchableOpacity>
             <View className="p-8">
               {/* search */}
               <View className="bg-neutral-50 p-8 rounded-lg mb-5 relative">
-                <TextInput className="rounded-lg bg-white pl-12" placeholder="Where do you want to go?" onChangeText={setInputSearch}/>
+                <TextInput className="rounded-lg bg-white pl-12" placeholder="Where do you want to go?" onChangeText={(value) => setInputSearch(value)}/>
                 <Image source={require('../assets/SearchOutline.png')} className="w-7 h-7 relative bottom-10 left-3" />
                 {/* input date */}
                 <View className="flex flex-row justify-between">
@@ -113,6 +109,7 @@ import {
                     </TouchableOpacity>
                     <DatePicker
                       modal
+                      mode='date'
                       open={modalIn}
                       date={dateIn}
                       onConfirm={date => {
@@ -136,6 +133,7 @@ import {
                     </TouchableOpacity>
                     <DatePicker
                       modal
+                      mode='date'
                       open={modalOut}
                       date={dateOut}
                       onConfirm={date => {
@@ -153,7 +151,12 @@ import {
 
                 {/* input guest */}
                 <View className="relative my-3">
-                  <TextInput className="rounded-lg bg-white pl-12" keyboardType="numeric" placeholder="Guest" />
+                  <TextInput 
+                    className="rounded-lg bg-white pl-12" 
+                    keyboardType="numeric" 
+                    placeholder="Guest"
+                    onChangeText={(value) => setInputGuest(value)} 
+                  />
                   <Image source={require('../assets/UserOutline.png')} className="w-6 h-6 relative bottom-10 left-3" />
                 </View>
                 {/* end input guest */}
