@@ -9,13 +9,14 @@ import {
   SafeAreaView,
   TouchableOpacity,
 } from 'react-native';  
-  import { useState } from 'react';
-  import DatePicker from 'react-native-date-picker'
-  import {NavigationContainer} from '@react-navigation/native';
-  import {createNativeStackNavigator} from '@react-navigation/native-stack';
-  import AsyncStorage from '@react-native-async-storage/async-storage';
-  import Reactotron from 'reactotron-react-native';
+import { useState } from 'react';
+import DatePicker from 'react-native-date-picker'
+import {NavigationContainer} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Reactotron from 'reactotron-react-native';
 import { getSearchList, searchQuery } from '../features/hotelServices';
+import FormatDate from '../components/FormatDate';
 
   export default function Home({navigation}) {
     const [dateIn, setDateIn] = useState(new Date());
@@ -40,8 +41,8 @@ import { getSearchList, searchQuery } from '../features/hotelServices';
       const searchList = await getSearchList(
         {
           destination: responseQuery, 
-          checkIn: formatDate(dateIn.toISOString()), 
-          checkOut: formatDate(dateOut.toISOString()), 
+          checkIn: FormatDate(dateIn.toISOString()), 
+          checkOut: FormatDate(dateOut.toISOString()), 
           guest: inputGuest
         }
       );
@@ -68,30 +69,24 @@ import { getSearchList, searchQuery } from '../features/hotelServices';
         );
       });
     };
-    function formatDate(date) {
-      var d = new Date(date),
-          month = '' + (d.getMonth() + 1),
-          day = '' + d.getDate(),
-          year = d.getFullYear();
-  
-      if (month.length < 2) 
-          month = '0' + month;
-      if (day.length < 2) 
-          day = '0' + day;
-  
-      return [year, month, day].join('-');
-  }
 
       return (
         <SafeAreaView>
-          <ScrollView>
+          {/* navbar */}
+          <View className="bg-[#405189] flex flex-row justify-between p-3">
+            <Text className="w-20"></Text>
+            <Text className="text-white text-2xl">Home</Text>
             <TouchableOpacity activeOpacity={1.0}>
               <Text
                 onPress={setNavigator}
-                className={`bg-[#405189] p-2 border w-20 mt-8 ml-4 rounded-xl text-white text-center `}>
-                Loginss
+                className={`bg-white p-2 border w-20 mr-2 rounded-xl text-[#405189] font-bold text-center `}>
+                Login
               </Text>
             </TouchableOpacity>
+          </View>
+          {/* end navbar */}
+
+          <ScrollView>
             <View className="p-8">
               {/* search */}
               <View className="bg-neutral-50 p-8 rounded-lg mb-5 relative">

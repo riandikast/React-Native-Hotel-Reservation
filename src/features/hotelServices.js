@@ -17,7 +17,7 @@ export const searchQuery = async ({inputSearch}) => {
 
 export const getSearchList = async ({ destination, checkIn, checkOut, guest }) => {
     try {
-        const response = await fetch(`https://hotels4.p.rapidapi.com/properties/list?destinationId=${destination}&pageNumber=1&pageSize=5&checkIn=${checkIn}&checkOut=${checkOut}&adults1=${guest}`, {
+        const response = await fetch(`https://hotels4.p.rapidapi.com/properties/list?destinationId=${destination}&pageNumber=1&pageSize=10&checkIn=${checkIn}&checkOut=${checkOut}&adults1=${guest}`, {
             method: 'GET',
             headers: {
                 'X-RapidAPI-Key': '60919b42bamshb74e511f0ffffbcp1d33abjsn8a40417f3a96',
