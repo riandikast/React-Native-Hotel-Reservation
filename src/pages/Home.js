@@ -68,16 +68,19 @@ import {
     const getList = () => {
       return data?.map(i => {
         return (
-          <View className="z-10 bg-white rounded-xl my-3" key={i.name}>
+          <TouchableOpacity 
+            className="z-10 bg-white rounded-xl my-3"  
+            key={i.id}
+            onPress={ ()=> navigation.navigate('Detail', {hotelId: i.id})}
+          >
             {Reactotron.log(i.name)}
-            <Image source={i.optimizedThumbUrls.srpDesktop} className="w-[250px] h-40"/>
+            <Image source={{uri: i.optimizedThumbUrls.srpDesktop}} className="w-full h-44 object-contain"/>
             <View className="p-5">
               <Text className='text-black text-lg font-semibold mb-1'>{i.name}</Text>
               <Text className="text-[#405189] text-2xl font-bold">{i.ratePlan.price.current}</Text>
               <Text className="text-md ml-1">/night</Text>
-
             </View>
-          </View>
+          </TouchableOpacity>
   
         );
       });
@@ -173,17 +176,14 @@ import {
               {/* content */}
               <View className="bg-white p-4 rounded-lg">
                 <View className="mb-5">
-                  <Text className="text-black text-lg font-semibold mb-3">TOP DESTINATIONSsssss</Text>
+                  <Text className="text-black text-lg font-semibold mb-3">TOP DESTINATIONS</Text>
                   <ScrollView horizontal={true} className="snap-x">
                     <View className="snap-center">
                       <ImageBackground source={require('../assets/hotel.jpeg')} className="mr-3 w-44 h-40" imageStyle={{ borderRadius: 10}}>
                           <Text className="text-xl text-white absolute bottom-3 left-4">Bali</Text>
                       </ImageBackground>
                     </View>
-                    <View 
-                      className="snap-center"
-                      onStartShouldSetResponder={() => navigation.navigate('Detail')}
-                    >
+                    <View className="snap-center">
                       <ImageBackground source={require('../assets/hotel.jpeg')} className="mr-3 w-44 h-40" imageStyle={{ borderRadius: 10}}>
                         <Text className="text-xl text-white absolute bottom-3 left-4">Yogyakarta</Text>
                       </ImageBackground>
