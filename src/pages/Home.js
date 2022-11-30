@@ -34,6 +34,7 @@ import FormatDate from '../components/FormatDate';
 
       }
       navigation.navigate('Login')
+
     }
 
     const fetchApiCall = async () => {
@@ -47,6 +48,7 @@ import FormatDate from '../components/FormatDate';
         }
       );
       setData(searchList);
+      Reactotron.log(searchList)
     }
 
     const getList = () => {
