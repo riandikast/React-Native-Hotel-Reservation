@@ -55,10 +55,15 @@ import FormatDate from '../components/FormatDate';
           <TouchableOpacity 
             className="z-10 bg-white rounded-xl my-3"  
             key={i.id}
-            onPress={ ()=> navigation.navigate('Detail', {hotelId: i.id})}
+            onPress={ ()=> navigation.navigate('Detail', {
+              hotelId: i.id, 
+              checkIn: FormatDate(dateIn.toISOString()), 
+              checkOut: FormatDate(dateOut.toISOString()), 
+              guest: inputGuest 
+            })}
           >
             {Reactotron.log(i.name)}
-            <Image source={{uri: i.optimizedThumbUrls.srpDesktop}} className="w-full h-44 object-contain"/>
+            <Image source={{uri: i.optimizedThumbUrls?.srpDesktop}} className="w-full h-44 object-contain"/>
             <View className="p-5">
               <Text className='text-black text-lg font-semibold mb-1'>{i.name}</Text>
               <Text className="text-[#405189] text-2xl font-bold">{i.ratePlan.price.current}</Text>

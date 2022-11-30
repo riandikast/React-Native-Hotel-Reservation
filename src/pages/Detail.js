@@ -13,7 +13,7 @@ import {
   import { useEffect, useState } from 'react';
   import * as React from 'react';
   import RenderHtml from 'react-native-render-html';
-  import { getHotelDetail } from '../features/hotelServices';
+  import { getDetail } from '../features/hotelServices';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -24,7 +24,7 @@ export default function Detail({navigation, route}) {
   const starIcon = require('../assets/star.png');
   const icon = require('../assets/Settings.png');
   const [hotel, setHotel] = useState([])
-  const {hotelId} = route.params;
+  const {hotelId, checkIn, checkOut, guest} = route.params;
   const id = JSON.stringify(hotelId);
   const { width } = useWindowDimensions();
 
@@ -44,18 +44,18 @@ export default function Detail({navigation, route}) {
     } catch (err) {}
   };
 
-  const getDetail = async () => {
-    const detail = await getHotelDetail({id});
+  const getHotelDetail = async () => {
+    const detail = await getDetail({id, checkIn, checkOut, guest});
     setHotel([detail]);
   }
   useEffect(() => {
-    getDetail();
+    getHotelDetail();
   }, [])
 
   const hotelDetail = () => {
     return hotel?.map(i => { 
       return (
-        <View key={i.pdpHeader.hotelId}>
+        <View key={i.header?.hotelId}>
           {/* hero */}
           <ImageBackground
             source={exImage}
@@ -66,12 +66,12 @@ export default function Detail({navigation, route}) {
             </Text>
             <View>
               <Text className="text-white text-3xl font-semibold text-left">
-                {i.propertyDescription.name}
+                {i.name}
               </Text>
               <View className="flex flex-row items-center my-1">
                 <Image source={locationIcon} className="w-5 h-5 mr-1" />
                 <Text className="text-white text-md text-left">
-                  {i.propertyDescription.address.cityName}, {i.propertyDescription.address.countryName}
+                  {i.address?.cityName}, {i.address?.provinceName}
                 </Text>
               </View>
               <View className="flex flex-row items-center mt-1">
@@ -86,7 +86,7 @@ export default function Detail({navigation, route}) {
           {/* about */}
           <View className="my-3 p-5">
             <Text className="text-black text-xl font-semibold mb-3">ABOUT</Text>
-            {i.smallPrint.policies?.map(item => {
+            {i.smallPrint?.policies?.map(item => {
               const htmlAbout = {html: `${item}`};
               return (
                 <RenderHtml source={htmlAbout} contentWidth={width}/>
