@@ -25,6 +25,7 @@ import SelectDropdown from 'react-native-select-dropdown';
 import {launchImageLibrary, launchCamera} from 'react-native-image-picker';
 import ImagePickerDialog from '../components/ImagePickerDialog';
 import ZoomImageDialog from '../components/ZoomImageDialog';
+import ConfirmDialog from '../components/ConfirmDialog';
 import Modal from 'react-native-modalbox';
 
 export default function Settings({navigation}) {
@@ -38,6 +39,7 @@ export default function Settings({navigation}) {
   const [filePath, setFilePath] = useState({});
   const [imagePicker, setImagePicker] = useState(false);
   const [isZoom, setZoom] = useState(false);
+  const [isConfirmDialog, setConfirmDialog] = useState(false);
   const dispatch = useDispatch();
   const dropdownIcon = require('../assets/Dropdown.png');
   const openedDropdownIcon = require('../assets/OpenedDropdown.png');
@@ -49,6 +51,7 @@ export default function Settings({navigation}) {
       );
       dispatch(logoutAcc({account: accountData}));
     } catch (err) {}
+    setConfirmDialog(false)
   };
 
   const getUserData = async () => {
@@ -285,6 +288,20 @@ export default function Settings({navigation}) {
           </>
         )}
 
+        {isConfirmDialog && (
+          <>
+            <View>
+              {
+                <ConfirmDialog
+                  negativeClick={() => setConfirmDialog(false)}
+                  positiveClick={handleLogout} positiveText='Yes' negativeText='No ' msg='Do You Want to Logout?'>
+                    
+                  </ConfirmDialog>
+              }
+            </View>
+          </>
+        )}
+
         <View className="bg-[#405189]  flex  flex-row">
           <View className="mb-4 grow">
             <TouchableWithoutFeedback
@@ -303,7 +320,7 @@ export default function Settings({navigation}) {
           <View className="grow"></View>
         </View>
 
-        <View >
+        <View>
           <TouchableOpacity activeOpacity={1.0}>
             <View className="mb-auto">
               <View className="flex-1 flex-row justify-center ">
@@ -428,10 +445,9 @@ export default function Settings({navigation}) {
             </View>
 
             <View className="">
-              
               <TouchableWithoutFeedback
                 className="items-end"
-                onPress={handleLogout}
+                onPress={() => setConfirmDialog(true)}
                 activeOpacity={1.0}>
                 <View className="bg-white mx-8 flex-row  border-black ">
                   <Text className="text-[#d72323] text-left my-3 text-xl ml-6 font-semibold">
@@ -445,11 +461,11 @@ export default function Settings({navigation}) {
                 </View>
               </TouchableWithoutFeedback>
             </View>
-
           </TouchableOpacity>
         </View>
         {!isZoom && pickImage()}
       </View>
+      {/* {<ConfirmDialog></ConfirmDialog>} */}
     </SafeAreaView>
   );
 }
