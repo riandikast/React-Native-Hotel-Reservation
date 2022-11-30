@@ -7,12 +7,12 @@ import {
   Keyboard,
   TouchableOpacity,
   Image,
-  TouchableWithoutFeedback
+  TouchableWithoutFeedback,
 } from 'react-native';
 
 import * as React from 'react';
 import {useState, useEffect} from 'react';
-import {NavigationContainer} from '@react-navigation/native';
+import {NavigationContainer, CommonActions} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {useDispatch} from 'react-redux';
 import Reactotron from 'reactotron-react-native';
@@ -36,13 +36,10 @@ export default function Login({navigation}) {
 
   const handleLogin = async () => {
     try {
-
       dispatch(loginAcc({email: email, password: password}));
       getData();
-    } catch (err) {
-
-    }
-    checkNavigator()
+    } catch (err) {}
+    checkNavigator();
   };
 
   const getData = async () => {
@@ -62,10 +59,13 @@ export default function Login({navigation}) {
           navigation.navigate('Home');
         } else if (navigator === 'detail') {
           navigation.navigate('Detail');
+        } else {
+          navigation.navigate('Home');
         }
       }
     });
   };
+
 
   useEffect(() => {
     checkTextInput();
@@ -73,22 +73,22 @@ export default function Login({navigation}) {
 
   useEffect(() => {
     getData();
+
   }, []);
 
   return (
     <View className="flex-1 flex-col items-center justify-center">
-        <View className="self-start grow justify-start mt-12  ml-8 ">
-          <TouchableWithoutFeedback
-            onPress={() => navigation.goBack()}
-            activeOpacity={1.0}>
-            <Image
-              className={'w-10 h-10 p-3 mt-4 ml-4'}
-              source={require('../assets/BlueBack.png')}
-            />
-          </TouchableWithoutFeedback>
-        </View>
+      <View className="self-start grow justify-start mt-12  ml-8 ">
+        <TouchableWithoutFeedback
+          onPress={() => navigation.goBack()}
+          activeOpacity={1.0}>
+          <Image
+            className={'w-10 h-10 p-3 mt-4 ml-4'}
+            source={require('../assets/BlueBack.png')}
+          />
+        </TouchableWithoutFeedback>
+      </View>
       <View className="flex-col  mb-12">
-    
         <Text
           className={`text-4xl text-semibold p-2 text-[#405189] text-left mb-4 -ml-2 opacity-100 `}>
           Login
@@ -128,7 +128,7 @@ export default function Login({navigation}) {
           </View>
         </TouchableOpacity>
       </View>
-      <View className='grow'></View>
+      <View className="grow"></View>
     </View>
   );
 }

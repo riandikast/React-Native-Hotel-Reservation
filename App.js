@@ -17,6 +17,8 @@ import {Image, TouchableHighlight, View, Text} from 'react-native';
 import axios from 'axios';
 import Detail from './src/pages/Detail';
 import ZoomImageDialog from './src/components/ZoomImageDialog';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
@@ -97,6 +99,7 @@ const TabNav = () => {
 };
 
 function MyStack() {
+
   return (
     <Stack.Navigator screenOptions={{headerShown: false}}>
       {/* <Stack.Screen name="Splash" component={Splashscreen} /> */}
@@ -110,7 +113,7 @@ function MyStack() {
 }
 
 export default function App() {
-  useEffect(() => {}, []);
+
   return (
     <>
       <NavigationContainer>

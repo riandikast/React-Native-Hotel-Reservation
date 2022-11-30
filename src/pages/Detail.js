@@ -15,7 +15,7 @@ import {useEffect, useState, useCallback} from 'react';
 import * as React from 'react';
 import RenderHtml from 'react-native-render-html';
 import {getHotelDetail} from '../features/hotelServices';
-import {NavigationContainer} from '@react-navigation/native';
+import {NavigationContainer, CommonActions} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
@@ -38,23 +38,24 @@ export default function Detail({navigation, route}) {
   const [loved, setLoved] = useState(false);
   const [iconChanged, setIconChanged] = useState(false);
   const [loveIcon, setLoveIcon] = useState(require('../assets/Unlove.png'));
-  const {hotelId, checkIn, checkOut, guest} = route.params;
+  // const {hotelId, checkIn, checkOut, guest} = route.params;
   const [userID, setUserID] = useState();
-  const id = JSON.stringify(hotelId);
+  // const id = JSON.stringify(hotelId);
   const {width} = useWindowDimensions();
   const dispatch = useDispatch();
   const handleBooking = async () => {
     try {
-      const accountData = await AsyncStorage.getItem('@account').then(
+      const loginCheck = await AsyncStorage.getItem('@loginNavigator').then(
         JSON.parse,
       );
-      accountData.map(acc => {
-        if (!acc.isLogin) {
-          AsyncStorage.setItem('@temporaryNavigation', 'detail');
-          navigation.navigate('Login');
-        } else {
-        }
-      });
+  
+      if (loginCheck) {
+
+      } else {
+        AsyncStorage.setItem('@temporaryNavigation', 'detail');
+        navigation.navigate('Login')
+        //milih pake local dr pada pake common action reset karna lebih singkat delay nya
+      }
     } catch (err) {}
   };
 
@@ -69,7 +70,7 @@ export default function Detail({navigation, route}) {
 
     dispatch(getFavoriteData({favorite: favoriteData}));
     for (let i = 0; i < favoriteData?.length; i++) {
-      if (favoriteData[i].id === hotelId) {
+      if (favoriteData[i].id === 1) {
         setLoveIcon(require('../assets/Love.png'));
         setLoved(true);
         break;
@@ -91,7 +92,7 @@ export default function Detail({navigation, route}) {
     }
 
     let saveHotel = {
-      id: 6,
+      id: 1,
       userid: userID,
       name: 'nama',
       description: 'desc',
@@ -213,7 +214,7 @@ export default function Detail({navigation, route}) {
   return (
     <SafeAreaView>
       <ScrollView className="mb-10">
-        {hotelDetail()}
+        {/* {hotelDetail()} */}
       </ScrollView>
       {/* button booking */}
       <View className="flex-row">
