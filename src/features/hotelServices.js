@@ -32,7 +32,7 @@ export const getSearchList = async ({ destination, checkIn, checkOut, guest }) =
     }
 }
 
-export const getDetail = async ({id, checkIn, checkOut, guest}) => {
+export const getHotelDetail = async ({id, checkIn, checkOut, guest}) => {
     try {
         const response = await fetch(`https://hotels-com-provider.p.rapidapi.com/v1/hotels/booking-details?adults_number=${guest}&checkin_date=${checkIn}&locale=en_US&currency=USD&hotel_id=${id}&checkout_date=${checkOut}`, {
             method: 'GET',

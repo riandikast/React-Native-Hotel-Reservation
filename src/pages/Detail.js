@@ -9,25 +9,40 @@ import {
   SafeAreaView,
   TouchableOpacity,
   useWindowDimensions,
+  TouchableWithoutFeedback,
 } from 'react-native';
-  import { useEffect, useState } from 'react';
-  import * as React from 'react';
-  import RenderHtml from 'react-native-render-html';
-  import { getDetail } from '../features/hotelServices';
+import {useEffect, useState, useCallback} from 'react';
+import * as React from 'react';
+import RenderHtml from 'react-native-render-html';
+import {getHotelDetail} from '../features/hotelServices';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {
+  addFavorite,
+  removeFavorite,
+  getFavoriteData,
+  checkData,
+} from '../features/FavoriteSlice';
+import {useDispatch, useSelector} from 'react-redux';
+import Reactotron from 'reactotron-react-native';
+import {useFocusEffect} from '@react-navigation/native';
 
 export default function Detail({navigation, route}) {
   const exImage = require('../assets/hotel.jpeg');
   const locationIcon = require('../assets/location.png');
   const starIcon = require('../assets/star.png');
   const icon = require('../assets/Settings.png');
-  const [hotel, setHotel] = useState([])
-  const {hotelId, checkIn, checkOut, guest} = route.params;
-  const id = JSON.stringify(hotelId);
-  const { width } = useWindowDimensions();
 
+  const [hotel, setHotel] = useState([]);
+  const [loved, setLoved] = useState(false);
+  const [iconChanged, setIconChanged] = useState(false);
+  const [loveIcon, setLoveIcon] = useState(require('../assets/Unlove.png'));
+  const {hotelId, checkIn, checkOut, guest} = route.params;
+  const [userID, setUserID] = useState();
+  const id = JSON.stringify(hotelId);
+  const {width} = useWindowDimensions();
+  const dispatch = useDispatch();
   const handleBooking = async () => {
     try {
       const accountData = await AsyncStorage.getItem('@account').then(
@@ -38,22 +53,96 @@ export default function Detail({navigation, route}) {
           AsyncStorage.setItem('@temporaryNavigation', 'detail');
           navigation.navigate('Login');
         } else {
-         
         }
       });
     } catch (err) {}
   };
 
-  const getHotelDetail = async () => {
+  const getDetail = async () => {
     const detail = await getDetail({id, checkIn, checkOut, guest});
     setHotel([detail]);
   }
+  
+  const getFavIconState = async () => {
+    const favoriteData =
+      (await AsyncStorage.getItem('@favorite').then(JSON.parse)) || [];
+
+    dispatch(getFavoriteData({favorite: favoriteData}));
+    for (let i = 0; i < favoriteData?.length; i++) {
+      if (favoriteData[i].id === hotelId) {
+        setLoveIcon(require('../assets/Love.png'));
+        setLoved(true);
+        break;
+      } else {
+        setLoveIcon(require('../assets/Unlove.png'));
+      }
+    }
+  };
+
+  const changeFavIconState = async () => {
+    if (loved) {
+      setLoveIcon(require('../assets/Unlove.png'));
+      setIconChanged(true);
+      setLoved(false);
+    } else {
+      setLoveIcon(require('../assets/Love.png'));
+      setIconChanged(true);
+      setLoved(true);
+    }
+
+    let saveHotel = {
+      id: 6,
+      userid: userID,
+      name: 'nama',
+      description: 'desc',
+      location: 'lokasi',
+      price: 'lokasi',
+    };
+    try {
+      const favoriteData = await AsyncStorage.getItem('@favorite').then(
+        JSON.parse || [],
+      );
+      checkData({favorite: favoriteData, id: saveHotel.id});
+      if (!loved) {
+        dispatch(addFavorite(saveHotel));
+      } else {
+        Reactotron.log(saveHotel.id, 'woi')
+        dispatch(removeFavorite({id: saveHotel.id}));
+      }
+      const data = await AsyncStorage.getItem('@favorite').then(JSON.parse);
+      Reactotron.log(data);
+    } catch (error) {}
+  };
+
+  const getUserData = async () => {
+    try {
+      const accountData = await AsyncStorage.getItem('@account').then(
+        JSON.parse,
+      );
+      accountData.map(acc => {
+        if (acc.isLogin) {
+          setUserID(acc.id);
+        }
+      });
+    } catch (err) {}
+  };
+
+  const favoriteState = async () => {};
+
   useEffect(() => {
-    getHotelDetail();
-  }, [])
+    getDetail();
+    getFavIconState();
+  }, []);
+
+  useEffect(() => {
+    getUserData();
+    if (iconChanged) {
+      favoriteState();
+    }
+  }, [loved]);
 
   const hotelDetail = () => {
-    return hotel?.map(i => { 
+    return hotel?.map(i => {
       return (
         <View key={i.header?.hotelId}>
           {/* hero */}
@@ -88,9 +177,7 @@ export default function Detail({navigation, route}) {
             <Text className="text-black text-xl font-semibold mb-3">ABOUT</Text>
             {i.smallPrint?.policies?.map(item => {
               const htmlAbout = {html: `${item}`};
-              return (
-                <RenderHtml source={htmlAbout} contentWidth={width}/>
-              )
+              return <RenderHtml source={htmlAbout} contentWidth={width} />;
             })}
           </View>
 
@@ -99,26 +186,26 @@ export default function Detail({navigation, route}) {
             <Text className="text-black text-xl font-semibold mb-3">
               FACILITIES
             </Text>
-              {i.amenities[0]?.listItems?.map(items => {
-                return (
+            {i.amenities[0]?.listItems?.map(items => {
+              return (
                 <View className="mb-3">
-                  <Text className="text-black text-md mb-1">{items.heading}</Text>
+                  <Text className="text-black text-md mb-1">
+                    {items.heading}
+                  </Text>
                   <ScrollView horizontal={true}>
                     {items.listItems?.map(item => {
                       return (
                         <View className="bg-white w-auto p-2 rounded-lg mr-3">
                           <Text>{item}</Text>
                         </View>
-                      )
+                      );
                     })}
                   </ScrollView>
                 </View>
-                )
-              })}
+              );
+            })}
           </View>
-
         </View>
-
       );
     });
   };
@@ -129,14 +216,27 @@ export default function Detail({navigation, route}) {
         {hotelDetail()}
       </ScrollView>
       {/* button booking */}
-      <TouchableOpacity activeOpacity={1.0}>
-        <Text
-          className="bg-[#405189] fixed bottom-14 w-11/12 mx-auto p-2 rounded-lg text-white text-xl font-bold text-center"
-          onPress={handleBooking}
-        >
-          Book this Hotel
-        </Text>
-      </TouchableOpacity>
+      <View className="flex-row">
+        <View className="grow">
+          <TouchableOpacity activeOpacity={1.0}>
+            <Text
+              className="bg-[#405189] fixed bottom-14 w-11/12 mx-auto p-2 mb-12 rounded-lg text-white text-xl font-bold text-center"
+              onPress={handleBooking}>
+              Book this Hotel
+            </Text>
+          </TouchableOpacity>
+        </View>
+        <View>
+          <TouchableWithoutFeedback
+            onPress={changeFavIconState}
+            activeOpacity={1.0}>
+            <Image
+              className={' fixed bottom-14 w-12 h-11 mr-8'}
+              source={loveIcon}
+            />
+          </TouchableWithoutFeedback>
+        </View>
+      </View>
     </SafeAreaView>
   );
 }
