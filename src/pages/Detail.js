@@ -43,6 +43,7 @@ export default function Detail({navigation, route}) {
   const id = Number(hotelId);
   const {width} = useWindowDimensions();
   const dispatch = useDispatch();
+
   const handleBooking = async () => {
     try {
       const accountData = await AsyncStorage.getItem('@account').then(
@@ -61,7 +62,6 @@ export default function Detail({navigation, route}) {
   const getDetail = async () => {
     const detail = await getHotelDetail(id);
     setHotel([detail]);
-    console.log(typeof(id))
   }
   
   const getFavIconState = async () => {
@@ -207,14 +207,9 @@ export default function Detail({navigation, route}) {
       <View className="flex-row">
         <View className="grow">
           <TouchableOpacity activeOpacity={1.0}>
-            {/* <Text
-              className="bg-[#405189] fixed bottom-14 w-11/12 mx-auto p-2 mb-12 rounded-lg text-white text-xl font-bold text-center"
-              onPress={handleBooking}>
-              Book this Hotel
-            </Text> */}
             <Text
               className="bg-[#405189] fixed bottom-14 w-11/12 mx-auto p-2 mb-12 rounded-lg text-white text-xl font-bold text-center"
-              onPress={() => navigation.navigate('BookingHistory')}>
+              onPress={handleBooking}>
               Book this Hotel
             </Text>
           </TouchableOpacity>

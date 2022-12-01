@@ -29,16 +29,27 @@ import { useEffect } from 'react';
     const [topYogya, setTopYogya] = useState([]);
     const [inputSearch, setInputSearch] = useState('');
     const [inputGuest, setInputGuest] = useState('');
+    const [showLoginButton, setShowLoginButton] = useState(true);
 
+    const checkNavigator = async () => {
+      try {
+        const loginCheck = await AsyncStorage.getItem('@loginNavigator').then(
+          JSON.parse,
+        );
+  
+        if (loginCheck) {
+          setShowLoginButton(false);
+        } else {
+        }
+      } catch (error) {}
+    };
+  
     const setNavigator = async () => {
       try {
-        AsyncStorage.setItem('@temporaryNavigation', "home");
-      }catch(err){
-
-      }
-      navigation.navigate('Login')
-
-    }
+        AsyncStorage.setItem('@temporaryNavigation', 'home');
+      } catch (err) {}
+      navigation.navigate('Login');
+    };  
 
     const fetchApiCall = async () => {
       const responseQuery = await searchQuery({inputSearch});
@@ -78,11 +89,8 @@ import { useEffect } from 'react';
       fetchTopHotel();
     }, [])
 
-    // console.log(data)
-
     const getList = () => {
       return data?.slice(0,10).map(i => {
-        // console.log(typeof(i.id))
         return (
           <TouchableOpacity 
             className="z-10 bg-white rounded-xl my-3"  
@@ -112,13 +120,15 @@ import { useEffect } from 'react';
           <View className="bg-[#405189] flex flex-row justify-between p-3">
             <Text className="w-20"></Text>
             <Text className="text-white text-2xl">Home</Text>
-            <TouchableOpacity activeOpacity={1.0}>
-              <Text
-                onPress={setNavigator}
-                className={`bg-white p-2 border w-20 mr-2 rounded-xl text-[#405189] font-bold text-center `}>
-                Login
-              </Text>
-            </TouchableOpacity>
+            {showLoginButton && (
+              <TouchableOpacity activeOpacity={1.0}>
+                <Text
+                  onPress={setNavigator}
+                  className={`bg-white p-2 border w-20 mr-2 rounded-xl text-[#405189] font-bold text-center `}>
+                  Login
+                </Text>
+              </TouchableOpacity>
+            )}
           </View>
           {/* end navbar */}
 
@@ -203,9 +213,7 @@ import { useEffect } from 'react';
               {/* end search */}
               
               {/* search results */}
-              <View>
-                {getList()}
-              </View>
+              <View>{getList()}</View>
 
               {/* content */}
               <View className="bg-white px-4 pt-4 pb-8 rounded-lg">
