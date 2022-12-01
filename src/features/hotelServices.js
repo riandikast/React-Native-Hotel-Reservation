@@ -3,7 +3,7 @@ export const searchQuery = async ({inputSearch}) => {
         const response = await fetch(`https://hotels-com-provider.p.rapidapi.com/v2/regions?query=${inputSearch}&locale=en_ID`, {
             method: 'GET',
             headers: {
-                'X-RapidAPI-Key': '4f39f63d49msh1bb3ebc9eaf76dfp13a97cjsn4398851ef1d1',
+                'X-RapidAPI-Key': 'f072bc16f6mshcce277d0781327ap1f82d0jsnb2f175125887',
                 'X-RapidAPI-Host': 'hotels-com-provider.p.rapidapi.com'
             }
         });
@@ -21,7 +21,7 @@ export const getSearchList = async ({ city, checkIn, checkOut, guest }) => {
         const response = await fetch(`https://hotels-com-provider.p.rapidapi.com/v2/hotels/search?checkout_date=${checkOut}&locale=en_ID&checkin_date=${checkIn}&sort_order=RECOMMENDED&region_id=${city}&adults_number=${guest}&currency=IDR`, {
             method: 'GET',
             headers: {
-                'X-RapidAPI-Key': '4f39f63d49msh1bb3ebc9eaf76dfp13a97cjsn4398851ef1d1',
+                'X-RapidAPI-Key': 'f072bc16f6mshcce277d0781327ap1f82d0jsnb2f175125887',
                 'X-RapidAPI-Host': 'hotels-com-provider.p.rapidapi.com'
             }
         });
@@ -38,7 +38,7 @@ export const getHotelDetail = async (id) => {
         const response = await fetch(`https://hotels-com-provider.p.rapidapi.com/v2/hotels/details?currency=USD&locale=en_US&hotel_id=${id}`, {
             method: 'GET',
             headers: {
-                'X-RapidAPI-Key': '4f39f63d49msh1bb3ebc9eaf76dfp13a97cjsn4398851ef1d1',
+                'X-RapidAPI-Key': 'f072bc16f6mshcce277d0781327ap1f82d0jsnb2f175125887',
                 'X-RapidAPI-Host': 'hotels-com-provider.p.rapidapi.com'
             }
         });

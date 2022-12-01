@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   Image,
   ScrollView,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import Reactotron from 'reactotron-react-native';
 import * as React from 'react';
@@ -18,7 +19,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {useState, useEffect} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import LoadingModal from '../components/LoadingModal';
-export default function Favorite({navigation}) {
+export default function Favorite({navigation, route}) {
   const [dataFavorite, setDataFavorite] = useState([]);
   const [id, setID] = useState();
   const [isLogin, setIsLogin] = useState();
@@ -38,7 +39,6 @@ export default function Favorite({navigation}) {
           setID(acc.id);
           setShowLoading(false);
         }
-      
       });
     } catch (err) {}
   };
@@ -50,7 +50,16 @@ export default function Favorite({navigation}) {
           <TouchableOpacity
             className="z-10 bg-white rounded-xl my-3"
             key={i.id}
-            onPress={() => navigation.navigate('Detail', {hotelId: i.id})}>
+            onPress={() =>
+              navigation.navigate('Detail', {
+                hotelName: i.name,
+                hotelImage: i.image,
+                hotelId: i.id,
+                checkIn: i.checkIn,
+                checkOut: i.checkOut,
+                guest: '2',
+              })
+            }>
             <Image
               source={{uri: i.image}}
               className="w-full h-44 object-contain"
@@ -98,14 +107,33 @@ export default function Favorite({navigation}) {
   useEffect(() => {
     checkNavigator();
     getUserData();
-    getFavorite();
   }, [navigation]);
+
+  React.useLayoutEffect(() => {
+    getFavorite();
+  });
 
   return (
     <SafeAreaView>
+      <View className="bg-[#405189]  flex  flex-row">
+        <View className="mb-4 grow">
+          <TouchableWithoutFeedback
+            onPress={() => navigation.goBack()}
+            activeOpacity={1.0}>
+            <Image
+              className={'w-10 h-10 p-3 mt-4 ml-4'}
+              source={require('../assets/Back.png')}
+            />
+          </TouchableWithoutFeedback>
+        </View>
+
+        <View className=" flex-1 justify-center ">
+          <Text className="text-white text-2xl ">Favorite</Text>
+        </View>
+        <View className="grow"></View>
+      </View>
       <ScrollView>
-        {favList()}
-        {/* <View>{showLoading ? <LoadingModal /> : favList()}</View> */}
+        <View>{showLoading ? <LoadingModal /> : favList()}</View>
       </ScrollView>
     </SafeAreaView>
   );

@@ -18,7 +18,8 @@ import axios from 'axios';
 import Detail from './src/pages/Detail';
 import ZoomImageDialog from './src/components/ZoomImageDialog';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import Booking from './src/pages/Booking';
+import BookingHistory from './src/pages/BookingHistory';
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
@@ -64,7 +65,7 @@ const TabNav = () => {
       />
       <Tab.Screen
         name="Profiles"
-        component={Profile}
+        component={BookingHistory}
         options={{
           tabBarIcon: ({focused, color, size}) => {
             return (
@@ -109,6 +110,7 @@ function MyStack() {
       <Stack.Screen name="Detail" component={Detail} />
       <Stack.Screen name="Favorite" component={Favorite} />
       <Stack.Screen name="ChangePassword" component={ChangePassword} />
+      <Stack.Screen name="Booking" component={Booking} />
     </Stack.Navigator>
   );
 }

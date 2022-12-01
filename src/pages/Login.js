@@ -21,10 +21,11 @@ import FlashMessage from 'react-native-flash-message';
 import {loginAcc, getAccountData} from '../features/UserSlice';
 import {showMessage, hideMessage} from 'react-native-flash-message';
 
-export default function Login({navigation}) {
+export default function Login({navigation, route}) {
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
   const [isinput, setIsInput] = useState(false);
+  const {hotelId, checkIn, checkOut, guest, hotelName, hotelPrice, hotelImage} = route.params;
   const dispatch = useDispatch();
   const checkTextInput = () => {
     if (email && password) {
@@ -58,7 +59,14 @@ export default function Login({navigation}) {
         if (navigator === 'home') {
           navigation.navigate('Home');
         } else if (navigator === 'detail') {
-          navigation.navigate('Detail');
+          navigation.navigate('Detail', {
+            hotelName: hotelName,
+            hotelImage: hotelImage,
+            hotelId: hotelId,
+            checkIn: checkIn,
+            checkOut: checkOut,
+            guest: '2'
+          });
         } else {
           navigation.navigate('Home');
         }
