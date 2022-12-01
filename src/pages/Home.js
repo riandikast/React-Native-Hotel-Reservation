@@ -8,37 +8,37 @@ import {
   ScrollView,
   SafeAreaView,
   TouchableOpacity,
-} from 'react-native';  
-import { useState } from 'react';
-import DatePicker from 'react-native-date-picker'
-import {NavigationContainer} from '@react-navigation/native';
+} from 'react-native';
+import DatePicker from 'react-native-date-picker';
+import {NavigationContainer, CommonAction, useFocusEffect} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Reactotron from 'reactotron-react-native';
-import { getSearchList, searchQuery } from '../features/hotelServices';
+import {getSearchList, searchQuery} from '../features/hotelServices';
 import FormatDate from '../components/FormatDate';
-import { useEffect } from 'react';
+import {useState, useEffect} from 'react';
+export default function Home({navigation}) {
+  const [dateIn, setDateIn] = useState(new Date());
+  const [dateOut, setDateOut] = useState(new Date());
+  const [modalIn, setModalIn] = useState(false);
+  const [modalOut, setModalOut] = useState(false);
+  const [data, setData] = useState([]);
+  const [inputSearch, setInputSearch] = useState('');
+  const [inputGuest, setInputGuest] = useState('');
+  const [showLoginButton, setShowLoginButton] = useState(true);
 
-  export default function Home({navigation}) {
-    const [dateIn, setDateIn] = useState(new Date());
-    const [dateOut, setDateOut] = useState(new Date());
-    const [modalIn, setModalIn] = useState(false);
-    const [modalOut, setModalOut] = useState(false);
-    const [data, setData] = useState([]);
-    const [topBali, setTopBali] = useState([]);
-    const [topYogya, setTopYogya] = useState([]);
-    const [inputSearch, setInputSearch] = useState('');
-    const [inputGuest, setInputGuest] = useState('');
+  const checkNavigator = async () => {
+    try {
+      const loginCheck = await AsyncStorage.getItem('@loginNavigator').then(
+        JSON.parse,
+      );
 
-    const setNavigator = async () => {
-      try {
-        AsyncStorage.setItem('@temporaryNavigation', "home");
-      }catch(err){
-
+      if (loginCheck) {
+        setShowLoginButton(false);
+      } else {
       }
-      navigation.navigate('Login')
-
-    }
+    } catch (error) {}
+  };
 
     const fetchApiCall = async () => {
       const responseQuery = await searchQuery({inputSearch});
@@ -78,11 +78,8 @@ import { useEffect } from 'react';
       fetchTopHotel();
     }, [])
 
-    // console.log(data)
-
     const getList = () => {
       return data?.slice(0,10).map(i => {
-        // console.log(typeof(i.id))
         return (
           <TouchableOpacity 
             className="z-10 bg-white rounded-xl my-3"  
@@ -101,111 +98,98 @@ import { useEffect } from 'react';
               <Text className="text-md ml-1">/night</Text>
             </View>
           </TouchableOpacity>
-  
         );
       });
-    };
+    }; 
 
-      return (
-        <SafeAreaView>
-          {/* navbar */}
-          <View className="bg-[#405189] flex flex-row justify-between p-3">
-            <Text className="w-20"></Text>
-            <Text className="text-white text-2xl">Home</Text>
-            <TouchableOpacity activeOpacity={1.0}>
-              <Text
-                onPress={setNavigator}
-                className={`bg-white p-2 border w-20 mr-2 rounded-xl text-[#405189] font-bold text-center `}>
-                Login
-              </Text>
-            </TouchableOpacity>
-          </View>
-          {/* end navbar */}
+  return (
+    <SafeAreaView>
+      {/* navbar */}
+      <View className="bg-[#405189] flex flex-row justify-between p-3">
+        <Text className="w-20"></Text>
+        <Text className="text-white text-2xl">Home</Text>
+        {showLoginButton && (
+          <TouchableOpacity activeOpacity={1.0}>
+            <Text
+              onPress={setNavigator}
+              className={`bg-white p-2 border w-20 mr-2 rounded-xl text-[#405189] font-bold text-center `}>
+              Login
+            </Text>
+          </TouchableOpacity>
+        )}
+      </View>
+      {/* end navbar */}
 
-          <ScrollView>
-            <View className="px-8 pt-8 pb-20">
-              {/* search */}
-              <View className="bg-neutral-50 p-8 rounded-lg mb-5 relative">
-                <TextInput className="rounded-lg bg-white pl-12" placeholder="Where do you want to go?" onChangeText={(value) => setInputSearch(value)}/>
-                <Image source={require('../assets/SearchOutline.png')} className="w-7 h-7 relative bottom-10 left-3" />
-                {/* input date */}
-                <View className="flex flex-row justify-between">
-                  {/* check in */}
-                  <View className="mr-2">
-                    <TouchableOpacity
-                      className="p-2 rounded-md bg-white flex flex-row"
-                      onPress={() => setModalIn(true)}>
-                        <Image source={require('../assets/Calendar.png')} className="w- h-6 mr-2"/>
-                      <Text>{dateIn.toDateString()}</Text>
-                    </TouchableOpacity>
-                    <DatePicker
-                      modal
-                      mode='date'
-                      open={modalIn}
-                      date={dateIn}
-                      onConfirm={date => {
-                        setModalIn(false);
-                        setDateIn(date);
-                      }}
-                      onCancel={() => {
-                        setModalIn(false);
-                      }}
-                    />
-                  </View>
-                  {/* end check in */}
-
-                  {/* check out */}
-                  <View className="">
-                    <TouchableOpacity
-                      className="p-2 rounded-md bg-white flex flex-row"
-                      onPress={() => setModalOut(true)}>
-                      <Image source={require('../assets/Calendar.png')} className="w-6 h-6 mr-2"/>
-                      <Text>{dateOut.toDateString()}</Text>
-                    </TouchableOpacity>
-                    <DatePicker
-                      modal
-                      mode='date'
-                      open={modalOut}
-                      date={dateOut}
-                      onConfirm={date => {
-                        setModalOut(false);
-                        setDateOut(date);
-                      }}
-                      onCancel={() => {
-                        setModalOut(false);
-                      }}
-                    />
-                  </View>
-                  {/* end check out */}
-                </View>
-                {/* end input date */}
-
-                {/* input guest */}
-                <View className="relative my-3">
-                  <TextInput 
-                    className="rounded-lg bg-white pl-12" 
-                    keyboardType="numeric" 
-                    placeholder="Guest"
-                    onChangeText={(value) => setInputGuest(value)} 
-                  />
-                  <Image source={require('../assets/UserOutline.png')} className="w-6 h-6 relative bottom-10 left-3" />
-                </View>
-                {/* end input guest */}
-                
-                {/* button search */}
+      <ScrollView>
+        <View className="p-8">
+          {/* search */}
+          <View className="bg-neutral-50 p-8 rounded-lg mb-5 relative">
+            <TextInput
+              className="rounded-lg bg-white pl-12"
+              placeholder="Where do you want to go?"
+              onChangeText={value => setInputSearch(value)}
+            />
+            <Image
+              source={require('../assets/SearchOutline.png')}
+              className="w-7 h-7 relative bottom-10 left-3"
+            />
+            {/* input date */}
+            <View className="flex flex-row justify-between">
+              {/* check in */}
+              <View className="mr-2">
                 <TouchableOpacity
-                  className="p-2 rounded-lg bg-[#405189]"
-                  onPress={fetchApiCall}
-                  >
-                  <Text className="text-white text-xl text-center font-semibold">Search</Text>
+                  className="p-2 rounded-md bg-white flex flex-row"
+                  onPress={() => setModalIn(true)}>
+                  <Image
+                    source={require('../assets/Calendar.png')}
+                    className="w- h-6 mr-2"
+                  />
+                  <Text>{dateIn.toDateString()}</Text>
                 </TouchableOpacity>
+                <DatePicker
+                  modal
+                  mode="date"
+                  open={modalIn}
+                  date={dateIn}
+                  onConfirm={date => {
+                    setModalIn(false);
+                    setDateIn(date);
+                  }}
+                  onCancel={() => {
+                    setModalIn(false);
+                  }}
+                />
               </View>
-              {/* end search */}
-              
-              {/* search results */}
-              <View>
-                {getList()}
+              {/* end check in */}
+
+              {/* check out */}
+              <View className="">
+                <TouchableOpacity
+                  className="p-2 rounded-md bg-white flex flex-row"
+                  onPress={() => setModalOut(true)}>
+                  <Image
+                    source={require('../assets/Calendar.png')}
+                    className="w-6 h-6 mr-2"
+                  />
+                  <Text>{dateOut.toDateString()}</Text>
+                </TouchableOpacity>
+                <DatePicker
+                  modal
+                  mode="date"
+                  open={modalOut}
+                  date={dateOut}
+                  onConfirm={date => {
+                    setModalOut(false);
+                    setDateOut(date);
+                  }}
+                  onCancel={() => {
+                    setModalOut(false);
+                  }}
+                />
               </View>
+              {/* end check out */}
+            </View>
+            {/* end input date */}
 
               {/* content */}
               <View className="bg-white px-4 pt-4 pb-8 rounded-lg">
@@ -249,10 +233,10 @@ import { useEffect } from 'react';
                     })}
                   </ScrollView>
                 </View>
-              </View>
             </View>
-          </ScrollView>
-        </SafeAreaView>
-      );
-    }
-    
+          </View>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  );
+}

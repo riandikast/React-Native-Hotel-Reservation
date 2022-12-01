@@ -94,7 +94,7 @@ export const accountSlice = createSlice({
         ) {
           acc.isLogin = true;
           AsyncStorage.setItem('@account', JSON.stringify(state.account));
-
+          AsyncStorage.setItem('@loginNavigator', 'true');
           CustomAlert(
             'Login Successfull',
             'center',
@@ -117,7 +117,8 @@ export const accountSlice = createSlice({
         if (acc.isLogin === true) {
           acc.isLogin = false;
           AsyncStorage.setItem('@account', JSON.stringify(state.account));
-          CustomAlert('Logout', 'center', require('../assets/Success.png'));
+          AsyncStorage.removeItem('@loginNavigator');
+          CustomAlert('You are Logged Out', 'center',     require('../assets/Success.png'));
           throw BreakException;
         }
       });

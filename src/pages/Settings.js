@@ -14,7 +14,12 @@ import {
 } from 'react-native';
 
 import * as React from 'react';
-import {NavigationContainer} from '@react-navigation/native';
+import {
+  NavigationContainer,
+  useFocusEffect,
+  CommonActions,
+} from '@react-navigation/native';
+
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {logoutAcc, updateAcc} from '../features/UserSlice';
@@ -27,7 +32,8 @@ import ImagePickerDialog from '../components/ImagePickerDialog';
 import ZoomImageDialog from '../components/ZoomImageDialog';
 import ConfirmDialog from '../components/ConfirmDialog';
 import Modal from 'react-native-modalbox';
-
+import Reactotron from 'reactotron-react-native';
+import LoadingModal from '../components/LoadingModal';
 export default function Settings({navigation}) {
   const [id, setID] = useState();
   const [image, setImage] = useState();
@@ -39,28 +45,35 @@ export default function Settings({navigation}) {
   const [filePath, setFilePath] = useState({});
   const [imagePicker, setImagePicker] = useState(false);
   const [isZoom, setZoom] = useState(false);
+  const [showLoading, setShowLoading] = useState(true);
   const [isConfirmDialog, setConfirmDialog] = useState(false);
+  const [isLogout, setIsLogout] = useState(false);
   const dispatch = useDispatch();
   const dropdownIcon = require('../assets/Dropdown.png');
   const openedDropdownIcon = require('../assets/OpenedDropdown.png');
   const genderOption = ['Male', 'Female'];
+
   const handleLogout = async () => {
     try {
       const accountData = await AsyncStorage.getItem('@account').then(
         JSON.parse,
       );
+
       dispatch(logoutAcc({account: accountData}));
     } catch (err) {}
-    setConfirmDialog(false)
+    setConfirmDialog(false);
+    setIsLogout(true);
   };
 
   const getUserData = async () => {
+    setShowLoading(true);
     try {
       const accountData = await AsyncStorage.getItem('@account').then(
         JSON.parse,
       );
       accountData.map(acc => {
         if (acc.isLogin) {
+          setShowLoading(false);
           setID(acc.id);
           setImage(acc.image);
           setFirstname(acc.firstname);
@@ -264,9 +277,42 @@ export default function Settings({navigation}) {
       navigation.setOptions({tabBarStyle: {display: 'flex'}});
     }
   };
+
+  const checkNavigator = async () => {
+    const loginCheck = await AsyncStorage.getItem('@loginNavigator').then(
+      JSON.parse,
+    );
+
+    if (loginCheck) {
+    } else {
+      setShowLoading(false);
+      AsyncStorage.setItem('@temporaryNavigation', 'home');
+      navigation.dispatch(
+        CommonActions.reset({
+          index: 1,
+          routes: [
+            {name: 'Home'},
+            {
+              name: 'Login',
+            },
+          ],
+        }),
+      );
+    }
+  };
+
   useEffect(() => {
+    checkNavigator();
     getUserData();
-  }, []);
+  }, [navigation]);
+
+
+
+  useEffect(() => {
+    if (isLogout) {
+      navigation.goBack();
+    }
+  }, [isLogout]);
 
   useEffect(() => {
     updateUserData();
@@ -294,9 +340,10 @@ export default function Settings({navigation}) {
               {
                 <ConfirmDialog
                   negativeClick={() => setConfirmDialog(false)}
-                  positiveClick={handleLogout} positiveText='Yes' negativeText='No ' msg='Do You Want to Logout?'>
-                    
-                  </ConfirmDialog>
+                  positiveClick={handleLogout}
+                  positiveText="Yes"
+                  negativeText="No "
+                  msg="Do You Want to Logout?"></ConfirmDialog>
               }
             </View>
           </>
@@ -321,147 +368,153 @@ export default function Settings({navigation}) {
         </View>
 
         <View>
-          <TouchableOpacity activeOpacity={1.0}>
-            <View className="mb-auto">
-              <View className="flex-1 flex-row justify-center ">
-                <TouchableWithoutFeedback
-                  activeOpacity={1.0}
-                  onPress={() => zoomImage()}>
-                  <Image
-                    className={
-                      'w-44 h-44  mt-10 rounded-full border-black border-2 '
-                    }
-                    source={getImageUser()}
-                  />
-                </TouchableWithoutFeedback>
-              </View>
-              <View className="justify-center items-center">
-                <TouchableWithoutFeedback
-                  activeOpacity={1.0}
-                  onPress={() => setImagePicker(true)}>
-                  <Image
-                    className={'w-20 h-20  mt-36 ml-28 '}
-                    source={require('../assets/EditIcon.png')}
-                  />
-                </TouchableWithoutFeedback>
-              </View>
-
-              <View>
-                <Text className="text-[#405189] underline text-2xl mt-4 mb-1 ml-10  font-bold">
-                  Account
-                </Text>
-                <View className="bg-white mx-8 flex-row   border-black ">
-                  <Text className="text-black text-left my-3 text-xl ml-6 font-semibold">
-                    First Name
-                  </Text>
-                  <TextInput
-                    className="text-black text-left my-1 text-xl ml-auto mr-12 opacity-50"
-                    onChangeText={value => {
-                      setFirstname(value);
-                    }}>
-                    {firstname}
-                  </TextInput>
-                </View>
-
-                <View className="bg-white mx-8 flex-row   border-black ">
-                  <Text className="text-black text-left my-3 text-xl ml-6 font-semibold">
-                    Last Name
-                  </Text>
-                  <TextInput
-                    className="text-black text-left my-1 text-xl ml-auto mr-12 opacity-50"
-                    onChangeText={value => {
-                      setLastname(value);
-                    }}>
-                    {lastname}
-                  </TextInput>
-                </View>
-
-                <View className="bg-white mx-8 flex-row  border-black ">
-                  <Text className="text-black text-left my-3 text-xl ml-6 font-semibold">
-                    Email
-                  </Text>
-                  <TextInput
-                    className="text-black text-left my-1 text-xl ml-auto mr-12 opacity-50"
-                    onChangeText={value => {
-                      setEmail(value);
-                    }}>
-                    {email}
-                  </TextInput>
-                </View>
-                <View className="bg-white mx-8 flex-row  border-black ">
-                  <Text className="text-black text-left my-3 text-xl ml-6 font-semibold">
-                    Gender
-                  </Text>
-                  <View className="ml-auto">
-                    <SelectDropdown
-                      defaultValue={gender}
-                      defaultButtonText={gender}
-                      renderDropdownIcon={isOpened => {
-                        return (
-                          <Image
-                            className="h-4 w-4 mr-3 -ml-36"
-                            source={
-                              isOpened ? openedDropdownIcon : dropdownIcon
-                            }
-                          />
-                        );
-                      }}
-                      buttonTextStyle={{opacity: 50, color: '#fffff'}}
-                      buttonStyle={{backgroundColor: '#ffffff'}}
-                      data={genderOption}
-                      onSelect={(selectedItem, index) => {
-                        setGender(selectedItem);
-                      }}
-                      buttonTextAfterSelection={(selectedItem, index) => {
-                        return selectedItem;
-                      }}
-                      rowTextForSelection={(item, index) => {
-                        return item;
-                      }}
-                    />
+          {showLoading ? (
+            <LoadingModal />
+          ) : (
+            <>
+              <TouchableOpacity activeOpacity={1.0}>
+                <View className="mb-auto">
+                  <View className="flex-1 flex-row justify-center ">
+                    <TouchableWithoutFeedback
+                      activeOpacity={1.0}
+                      onPress={() => zoomImage()}>
+                      <Image
+                        className={
+                          'w-44 h-44  mt-10 rounded-full border-black border-2 '
+                        }
+                        source={getImageUser()}
+                      />
+                    </TouchableWithoutFeedback>
                   </View>
-                </View>
-              </View>
-              <View>
-                <Text className="text-[#405189] underline text-2xl mt-8 mb-1 ml-10 font-bold">
-                  Privacy and Security
-                </Text>
+                  <View className="justify-center items-center">
+                    <TouchableWithoutFeedback
+                      activeOpacity={1.0}
+                      onPress={() => setImagePicker(true)}>
+                      <Image
+                        className={'w-20 h-20  mt-36 ml-28 '}
+                        source={require('../assets/EditIcon.png')}
+                      />
+                    </TouchableWithoutFeedback>
+                  </View>
 
-                <TouchableWithoutFeedback
-                  onPress={() => navigation.navigate('ChangePassword')}
-                  activeOpacity={1.0}>
-                  <View className="bg-white mx-8 flex-row  border-black ">
-                    <Text className="text-[#d72323] text-left my-3 text-xl ml-6 font-semibold">
-                      Change password
+                  <View>
+                    <Text className="text-[#405189] underline text-2xl mt-4 mb-1 ml-10  font-bold">
+                      Account
+                    </Text>
+                    <View className="bg-white mx-8 flex-row   border-black ">
+                      <Text className="text-black text-left my-3 text-xl ml-6 font-semibold">
+                        First Name
+                      </Text>
+                      <TextInput
+                        className="text-black text-left my-1 text-xl ml-auto mr-12 opacity-50"
+                        onChangeText={value => {
+                          setFirstname(value);
+                        }}>
+                        {firstname}
+                      </TextInput>
+                    </View>
+
+                    <View className="bg-white mx-8 flex-row   border-black ">
+                      <Text className="text-black text-left my-3 text-xl ml-6 font-semibold">
+                        Last Name
+                      </Text>
+                      <TextInput
+                        className="text-black text-left my-1 text-xl ml-auto mr-12 opacity-50"
+                        onChangeText={value => {
+                          setLastname(value);
+                        }}>
+                        {lastname}
+                      </TextInput>
+                    </View>
+
+                    <View className="bg-white mx-8 flex-row  border-black ">
+                      <Text className="text-black text-left my-3 text-xl ml-6 font-semibold">
+                        Email
+                      </Text>
+                      <TextInput
+                        className="text-black text-left my-1 text-xl ml-auto mr-12 opacity-50"
+                        onChangeText={value => {
+                          setEmail(value);
+                        }}>
+                        {email}
+                      </TextInput>
+                    </View>
+                    <View className="bg-white mx-8 flex-row  border-black ">
+                      <Text className="text-black text-left my-3 text-xl ml-6 font-semibold">
+                        Gender
+                      </Text>
+                      <View className="ml-auto">
+                        <SelectDropdown
+                          defaultValue={gender}
+                          defaultButtonText={gender}
+                          renderDropdownIcon={isOpened => {
+                            return (
+                              <Image
+                                className="h-4 w-4 mr-3 -ml-36"
+                                source={
+                                  isOpened ? openedDropdownIcon : dropdownIcon
+                                }
+                              />
+                            );
+                          }}
+                          buttonTextStyle={{opacity: 50, color: '#fffff'}}
+                          buttonStyle={{backgroundColor: '#ffffff'}}
+                          data={genderOption}
+                          onSelect={(selectedItem, index) => {
+                            setGender(selectedItem);
+                          }}
+                          buttonTextAfterSelection={(selectedItem, index) => {
+                            return selectedItem;
+                          }}
+                          rowTextForSelection={(item, index) => {
+                            return item;
+                          }}
+                        />
+                      </View>
+                    </View>
+                  </View>
+                  <View>
+                    <Text className="text-[#405189] underline text-2xl mt-8 mb-1 ml-10 font-bold">
+                      Privacy and Security
                     </Text>
 
-                    <Image
-                      className={'w-6 h-6 ml-auto mt-4 mr-3 '}
-                      source={require('../assets/Forward.png')}
-                    />
+                    <TouchableWithoutFeedback
+                      onPress={() => navigation.navigate('ChangePassword')}
+                      activeOpacity={1.0}>
+                      <View className="bg-white mx-8 flex-row  border-black ">
+                        <Text className="text-[#d72323] text-left my-3 text-xl ml-6 font-semibold">
+                          Change password
+                        </Text>
+
+                        <Image
+                          className={'w-6 h-6 ml-auto mt-4 mr-3 '}
+                          source={require('../assets/Forward.png')}
+                        />
+                      </View>
+                    </TouchableWithoutFeedback>
                   </View>
-                </TouchableWithoutFeedback>
-              </View>
-            </View>
-
-            <View className="">
-              <TouchableWithoutFeedback
-                className="items-end"
-                onPress={() => setConfirmDialog(true)}
-                activeOpacity={1.0}>
-                <View className="bg-white mx-8 flex-row  border-black ">
-                  <Text className="text-[#d72323] text-left my-3 text-xl ml-6 font-semibold">
-                    Logout
-                  </Text>
-
-                  <Image
-                    className={'w-6 h-6 ml-auto mt-4 mr-3 '}
-                    source={require('../assets/Forward.png')}
-                  />
                 </View>
-              </TouchableWithoutFeedback>
-            </View>
-          </TouchableOpacity>
+
+                <View className="">
+                  <TouchableWithoutFeedback
+                    className="items-end"
+                    onPress={() => setConfirmDialog(true)}
+                    activeOpacity={1.0}>
+                    <View className="bg-white mx-8 flex-row  border-black ">
+                      <Text className="text-[#d72323] text-left my-3 text-xl ml-6 font-semibold">
+                        Logout
+                      </Text>
+
+                      <Image
+                        className={'w-6 h-6 ml-auto mt-4 mr-3 '}
+                        source={require('../assets/Forward.png')}
+                      />
+                    </View>
+                  </TouchableWithoutFeedback>
+                </View>
+              </TouchableOpacity>
+            </>
+          )}
         </View>
         {!isZoom && pickImage()}
       </View>

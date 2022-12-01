@@ -17,7 +17,8 @@ import {Image, TouchableHighlight, View, Text} from 'react-native';
 import axios from 'axios';
 import Detail from './src/pages/Detail';
 import ZoomImageDialog from './src/components/ZoomImageDialog';
-import BookingHistory from './src/pages/BookingHistory';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
@@ -98,6 +99,7 @@ const TabNav = () => {
 };
 
 function MyStack() {
+
   return (
     <Stack.Navigator screenOptions={{headerShown: false}}>
       {/* <Stack.Screen name="Splash" component={Splashscreen} /> */}
@@ -105,14 +107,13 @@ function MyStack() {
       <Stack.Screen name="Register" component={Register} />
       <Stack.Screen name="Login" component={Login} />
       <Stack.Screen name="Detail" component={Detail} />
-      <Stack.Screen name="BookingHistory" component={BookingHistory} />
       <Stack.Screen name="ChangePassword" component={ChangePassword} />
     </Stack.Navigator>
   );
 }
 
 export default function App() {
-  useEffect(() => {}, []);
+
   return (
     <>
       <NavigationContainer>
