@@ -17,6 +17,7 @@ import {Image, TouchableHighlight, View, Text} from 'react-native';
 import axios from 'axios';
 import Detail from './src/pages/Detail';
 import ZoomImageDialog from './src/components/ZoomImageDialog';
+import BookingHistory from './src/pages/BookingHistory';
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
@@ -104,6 +105,7 @@ function MyStack() {
       <Stack.Screen name="Register" component={Register} />
       <Stack.Screen name="Login" component={Login} />
       <Stack.Screen name="Detail" component={Detail} />
+      <Stack.Screen name="BookingHistory" component={BookingHistory} />
       <Stack.Screen name="ChangePassword" component={ChangePassword} />
     </Stack.Navigator>
   );

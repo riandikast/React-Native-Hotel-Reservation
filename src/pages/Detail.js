@@ -40,7 +40,7 @@ export default function Detail({navigation, route}) {
   const [loveIcon, setLoveIcon] = useState(require('../assets/Unlove.png'));
   const {hotelId, checkIn, checkOut, guest} = route.params;
   const [userID, setUserID] = useState();
-  const id = JSON.stringify(hotelId);
+  const id = Number(hotelId);
   const {width} = useWindowDimensions();
   const dispatch = useDispatch();
   const handleBooking = async () => {
@@ -59,8 +59,9 @@ export default function Detail({navigation, route}) {
   };
 
   const getDetail = async () => {
-    const detail = await getDetail({id, checkIn, checkOut, guest});
+    const detail = await getHotelDetail(id);
     setHotel([detail]);
+    console.log(typeof(id))
   }
   
   const getFavIconState = async () => {
@@ -144,7 +145,7 @@ export default function Detail({navigation, route}) {
   const hotelDetail = () => {
     return hotel?.map(i => {
       return (
-        <View key={i.header?.hotelId}>
+        <View key={i.summary?.id}>
           {/* hero */}
           <ImageBackground
             source={exImage}
@@ -154,13 +155,13 @@ export default function Detail({navigation, route}) {
               Hotel Detail
             </Text>
             <View>
-              <Text className="text-white text-3xl font-semibold text-left">
-                {i.name}
+              <Text className="text-white text-3xl font-semibold text-left" numberOfLines={2}>
+                {i.summary?.name}
               </Text>
               <View className="flex flex-row items-center my-1">
                 <Image source={locationIcon} className="w-5 h-5 mr-1" />
                 <Text className="text-white text-md text-left">
-                  {i.address?.cityName}, {i.address?.provinceName}
+                  {i.summary?.location?.address?.city}, {i.summary?.location?.address?.province}
                 </Text>
               </View>
               <View className="flex flex-row items-center mt-1">
@@ -175,10 +176,7 @@ export default function Detail({navigation, route}) {
           {/* about */}
           <View className="my-3 p-5">
             <Text className="text-black text-xl font-semibold mb-3">ABOUT</Text>
-            {i.smallPrint?.policies?.map(item => {
-              const htmlAbout = {html: `${item}`};
-              return <RenderHtml source={htmlAbout} contentWidth={width} />;
-            })}
+            <Text>{i.propertyContentSectionGroups?.aboutThisProperty?.sections[0].bodySubSections[0].elements[0].items[0].content?.text}</Text>
           </View>
 
           {/* facilities */}
@@ -186,24 +184,14 @@ export default function Detail({navigation, route}) {
             <Text className="text-black text-xl font-semibold mb-3">
               FACILITIES
             </Text>
-            {i.amenities[0]?.listItems?.map(items => {
+            <ScrollView horizontal={true}>
+            {i.summary?.amenities?.topAmenities?.items.map(item => {
               return (
-                <View className="mb-3">
-                  <Text className="text-black text-md mb-1">
-                    {items.heading}
-                  </Text>
-                  <ScrollView horizontal={true}>
-                    {items.listItems?.map(item => {
-                      return (
-                        <View className="bg-white w-auto p-2 rounded-lg mr-3">
-                          <Text>{item}</Text>
-                        </View>
-                      );
-                    })}
-                  </ScrollView>
-                </View>
-              );
-            })}
+                <Text className="bg-white w-auto p-2 rounded-lg mr-3">{item.text}</Text>
+
+                        );
+                      })}
+            </ScrollView>
           </View>
         </View>
       );
@@ -219,9 +207,14 @@ export default function Detail({navigation, route}) {
       <View className="flex-row">
         <View className="grow">
           <TouchableOpacity activeOpacity={1.0}>
-            <Text
+            {/* <Text
               className="bg-[#405189] fixed bottom-14 w-11/12 mx-auto p-2 mb-12 rounded-lg text-white text-xl font-bold text-center"
               onPress={handleBooking}>
+              Book this Hotel
+            </Text> */}
+            <Text
+              className="bg-[#405189] fixed bottom-14 w-11/12 mx-auto p-2 mb-12 rounded-lg text-white text-xl font-bold text-center"
+              onPress={() => navigation.navigate('BookingHistory')}>
               Book this Hotel
             </Text>
           </TouchableOpacity>

@@ -17,6 +17,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Reactotron from 'reactotron-react-native';
 import { getSearchList, searchQuery } from '../features/hotelServices';
 import FormatDate from '../components/FormatDate';
+import { useEffect } from 'react';
 
   export default function Home({navigation}) {
     const [dateIn, setDateIn] = useState(new Date());
@@ -24,6 +25,8 @@ import FormatDate from '../components/FormatDate';
     const [modalIn, setModalIn] = useState(false);
     const [modalOut, setModalOut] = useState(false);
     const [data, setData] = useState([]);
+    const [topBali, setTopBali] = useState([]);
+    const [topYogya, setTopYogya] = useState([]);
     const [inputSearch, setInputSearch] = useState('');
     const [inputGuest, setInputGuest] = useState('');
 
@@ -41,18 +44,45 @@ import FormatDate from '../components/FormatDate';
       const responseQuery = await searchQuery({inputSearch});
       const searchList = await getSearchList(
         {
-          destination: responseQuery, 
+          city: responseQuery, 
           checkIn: FormatDate(dateIn.toISOString()), 
           checkOut: FormatDate(dateOut.toISOString()), 
           guest: inputGuest
         }
       );
       setData(searchList);
-      Reactotron.log(searchList)
     }
 
+    const fetchTopHotel = async () => {
+      const baliHotel = await getSearchList(
+        {
+          city: '8956', 
+          checkIn: FormatDate(dateIn.toISOString()), 
+          checkOut: FormatDate(dateOut.toISOString()), 
+          guest: '2'
+        }
+      );
+      const yogyaHotel = await getSearchList(
+        {
+          city: '6223339', 
+          checkIn: FormatDate(dateIn.toISOString()), 
+          checkOut: FormatDate(dateOut.toISOString()), 
+          guest: '2'
+        }
+      );
+      setTopBali(baliHotel);
+      setTopYogya(yogyaHotel);
+    }
+
+    useEffect(() => {
+      fetchTopHotel();
+    }, [])
+
+    // console.log(data)
+
     const getList = () => {
-      return data?.map(i => {
+      return data?.slice(0,10).map(i => {
+        // console.log(typeof(i.id))
         return (
           <TouchableOpacity 
             className="z-10 bg-white rounded-xl my-3"  
@@ -64,11 +94,10 @@ import FormatDate from '../components/FormatDate';
               guest: inputGuest 
             })}
           >
-            {Reactotron.log(i.name)}
-            <Image source={{uri: i.optimizedThumbUrls?.srpDesktop}} className="w-full h-44 object-contain"/>
+            <Image source={{uri: i.propertyImage?.image?.url}} className="w-full h-44 object-contain"/>
             <View className="p-5">
               <Text className='text-black text-lg font-semibold mb-1'>{i.name}</Text>
-              <Text className="text-[#405189] text-2xl font-bold">{i.ratePlan.price.current}</Text>
+              <Text className="text-[#405189] text-2xl font-bold">{i.price?.lead?.formatted}</Text>
               <Text className="text-md ml-1">/night</Text>
             </View>
           </TouchableOpacity>
@@ -94,7 +123,7 @@ import FormatDate from '../components/FormatDate';
           {/* end navbar */}
 
           <ScrollView>
-            <View className="p-8">
+            <View className="px-8 pt-8 pb-20">
               {/* search */}
               <View className="bg-neutral-50 p-8 rounded-lg mb-5 relative">
                 <TextInput className="rounded-lg bg-white pl-12" placeholder="Where do you want to go?" onChangeText={(value) => setInputSearch(value)}/>
@@ -179,65 +208,45 @@ import FormatDate from '../components/FormatDate';
               </View>
 
               {/* content */}
-              <View className="bg-white p-4 rounded-lg">
+              <View className="bg-white px-4 pt-4 pb-8 rounded-lg">
                 <View className="mb-5">
-                  <Text className="text-black text-lg font-semibold mb-3">TOP DESTINATIONS</Text>
+                  <Text className="text-black text-lg font-semibold mb-3">POPULAR HOTELS IN BALI</Text>
                   <ScrollView horizontal={true} className="snap-x">
-                    <View className="snap-center">
-                      <ImageBackground source={require('../assets/hotel.jpeg')} className="mr-3 w-44 h-40" imageStyle={{ borderRadius: 10}}>
-                          <Text className="text-xl text-white absolute bottom-3 left-4">Bali</Text>
-                      </ImageBackground>
-                    </View>
-                    <View className="snap-center">
-                      <ImageBackground source={require('../assets/hotel.jpeg')} className="mr-3 w-44 h-40" imageStyle={{ borderRadius: 10}}>
-                        <Text className="text-xl text-white absolute bottom-3 left-4">Yogyakarta</Text>
-                      </ImageBackground>
-                    </View>
-                    <View className="snap-center">
-                      <ImageBackground source={require('../assets/hotel.jpeg')} className="mr-3 w-44 h-40" imageStyle={{ borderRadius: 10}}>
-                        <Text className="text-xl text-white absolute bottom-3 left-4">Jakarta</Text>
-                      </ImageBackground>
-                    </View>
-                    <View className="snap-center">
-                      <ImageBackground source={require('../assets/hotel.jpeg')} className="mr-3 w-44 h-40" imageStyle={{ borderRadius: 10}}>
-                        <Text className="text-xl text-white absolute bottom-3 left-4">Bandung</Text>
-                      </ImageBackground>
-                    </View>
-                    <View className="snap-center">
-                      <ImageBackground source={require('../assets/hotel.jpeg')} className="mr-3 w-44 h-40" imageStyle={{ borderRadius: 10}}>
-                        <Text className="text-xl text-white absolute bottom-3 left-4">Karawang</Text>
-                      </ImageBackground>
-                    </View>
+                    {topBali?.slice(0,7).map(hotel => {
+                      return <TouchableOpacity key={hotel.id} 
+                        onPress={ ()=> navigation.navigate('Detail', {
+                          hotelId: hotel.id, 
+                          checkIn: FormatDate(dateIn.toISOString()), 
+                          checkOut: FormatDate(dateOut.toISOString()), 
+                          guest: '2'
+                      })}>
+                        <View className="snap-center">
+                          <ImageBackground source={{uri: hotel.propertyImage?.image?.url}} className="mr-3 w-44 h-40" imageStyle={{ borderRadius: 10}}>
+                              <Text className="text-xl text-white font-semibold absolute bottom-3 px-3" numberOfLines={2}>{hotel.name}</Text>
+                          </ImageBackground>
+                        </View>
+                      </TouchableOpacity>
+                    })}
                   </ScrollView>
                 </View>
                 <View>
-                  <Text className="text-black text-lg font-semibold mb-3">POPULAR DESTINATIONS</Text>
+                  <Text className="text-black text-lg font-semibold mb-3">POPULAR HOTELS IN YOGYAKARTA</Text>
                   <ScrollView horizontal={true} className="snap-x">
-                  <View className="snap-center">
-                      <ImageBackground source={require('../assets/hotel.jpeg')} className="mr-3 w-44 h-40" imageStyle={{ borderRadius: 10}}>
-                          <Text className="text-xl text-white absolute bottom-3 left-4">Bali</Text>
-                      </ImageBackground>
-                    </View>
-                    <View className="snap-center">
-                      <ImageBackground source={require('../assets/hotel.jpeg')} className="mr-3 w-44 h-40" imageStyle={{ borderRadius: 10}}>
-                        <Text className="text-xl text-white absolute bottom-3 left-4">Yogyakarta</Text>
-                      </ImageBackground>
-                    </View>
-                    <View className="snap-center">
-                      <ImageBackground source={require('../assets/hotel.jpeg')} className="mr-3 w-44 h-40" imageStyle={{ borderRadius: 10}}>
-                        <Text className="text-xl text-white absolute bottom-3 left-4">Jakarta</Text>
-                      </ImageBackground>
-                    </View>
-                    <View className="snap-center">
-                      <ImageBackground source={require('../assets/hotel.jpeg')} className="mr-3 w-44 h-40" imageStyle={{ borderRadius: 10}}>
-                        <Text className="text-xl text-white absolute bottom-3 left-4">Bandung</Text>
-                      </ImageBackground>
-                    </View>
-                    <View className="snap-center">
-                      <ImageBackground source={require('../assets/hotel.jpeg')} className="mr-3 w-44 h-40" imageStyle={{ borderRadius: 10}}>
-                        <Text className="text-xl text-white absolute bottom-3 left-4">Karawang</Text>
-                      </ImageBackground>
-                    </View>
+                    {topYogya?.slice(0,7).map(hotel => {
+                      return <TouchableOpacity key={hotel.id} 
+                        onPress={ ()=> navigation.navigate('Detail', {
+                          hotelId: hotel.id, 
+                          checkIn: FormatDate(dateIn.toISOString()), 
+                          checkOut: FormatDate(dateOut.toISOString()), 
+                          guest: '2'
+                      })}>
+                        <View className="snap-center" key={hotel.id}>
+                          <ImageBackground source={{uri: hotel.propertyImage?.image?.url}} className="mr-3 w-44 h-40" imageStyle={{ borderRadius: 10}}>
+                              <Text className="text-xl text-white font-semibold absolute bottom-3 px-3" numberOfLines={2}>{hotel.name}</Text>
+                          </ImageBackground>
+                        </View>
+                      </TouchableOpacity>
+                    })}
                   </ScrollView>
                 </View>
               </View>
