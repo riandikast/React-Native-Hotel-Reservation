@@ -52,7 +52,7 @@ export default function Favorite({navigation}) {
             key={i.id}
             onPress={() => navigation.navigate('Detail', {hotelId: i.id})}>
             <Image
-              source={require('../assets/hotel.jpeg')}
+              source={{uri: i.image}}
               className="w-full h-44 object-contain"
             />
             <View className="p-5">
@@ -104,6 +104,7 @@ export default function Favorite({navigation}) {
   return (
     <SafeAreaView>
       <ScrollView>
+        {favList()}
         {/* <View>{showLoading ? <LoadingModal /> : favList()}</View> */}
       </ScrollView>
     </SafeAreaView>

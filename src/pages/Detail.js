@@ -38,7 +38,7 @@ export default function Detail({navigation, route}) {
   const [loved, setLoved] = useState(false);
   const [iconChanged, setIconChanged] = useState(false);
   const [loveIcon, setLoveIcon] = useState(require('../assets/Unlove.png'));
-  const {hotelId, checkIn, checkOut, guest, hotelName, hotelPrice, hotelPropertyImage} = route.params;
+  const {hotelId, checkIn, checkOut, guest, hotelName, hotelPrice, hotelImage} = route.params;
   const [userID, setUserID] = useState();
   const id = Number(hotelId);
   const {width} = useWindowDimensions();
@@ -95,9 +95,9 @@ export default function Detail({navigation, route}) {
       id: hotelId,
       userid: userID,
       name: hotelName,
-      image: hotelPropertyImage,
+      image: hotelImage,
       description: 'desc',
-      location: 'lokasi',
+      // location: location,
       price: hotelPrice,
     };
     try {

@@ -101,9 +101,9 @@ import { useEffect } from 'react';
             className="z-10 bg-white rounded-xl my-3"  
             key={i.id}
             onPress={ ()=> navigation.navigate('Detail', {
-              hoteName: i.price,
-              hotelPrice: i.price,
-              hotelImage: i.propertyImage,
+              hotelName: i.name,
+              hotelPrice: i.price?.lead?.formatted,
+              hotelImage: i.propertyImage?.image?.url,
               hotelId: i.id, 
               checkIn: FormatDate(dateIn.toISOString()), 
               checkOut: FormatDate(dateOut.toISOString()), 
@@ -255,6 +255,9 @@ import { useEffect } from 'react';
                     {topYogya?.slice(0,7).map(hotel => {
                       return <TouchableOpacity key={hotel.id} 
                         onPress={ ()=> navigation.navigate('Detail', {
+                          hotelName: hotel.name,
+                          hotelPrice: hotel.price?.lead?.formatted,
+                          hotelImage: hotel.propertyImage?.image?.url,
                           hotelId: hotel.id, 
                           checkIn: FormatDate(dateIn.toISOString()), 
                           checkOut: FormatDate(dateOut.toISOString()), 

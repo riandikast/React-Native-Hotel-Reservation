@@ -107,6 +107,7 @@ function MyStack() {
       <Stack.Screen name="Register" component={Register} />
       <Stack.Screen name="Login" component={Login} />
       <Stack.Screen name="Detail" component={Detail} />
+      <Stack.Screen name="Favorite" component={Favorite} />
       <Stack.Screen name="ChangePassword" component={ChangePassword} />
     </Stack.Navigator>
   );
