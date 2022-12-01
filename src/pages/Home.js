@@ -18,6 +18,7 @@ import Reactotron from 'reactotron-react-native';
 import { getSearchList, searchQuery } from '../features/hotelServices';
 import FormatDate from '../components/FormatDate';
 import { useEffect } from 'react';
+import LoadingModal from '../components/LoadingModal';
 
   export default function Home({navigation}) {
     const [dateIn, setDateIn] = useState(new Date());
@@ -30,6 +31,7 @@ import { useEffect } from 'react';
     const [inputSearch, setInputSearch] = useState('');
     const [inputGuest, setInputGuest] = useState('');
     const [showLoginButton, setShowLoginButton] = useState(true);
+    const [showLoading, setShowLoading] = useState(true);
 
     const checkNavigator = async () => {
       try {
@@ -51,7 +53,7 @@ import { useEffect } from 'react';
       navigation.navigate('Login');
     };  
 
-    const fetchApiCall = async () => {
+    const fetchSearchHotel = async () => {
       const responseQuery = await searchQuery({inputSearch});
       const searchList = await getSearchList(
         {
@@ -84,15 +86,17 @@ import { useEffect } from 'react';
       setTopBali(baliHotel);
       setTopYogya(yogyaHotel);
     }
-
+    
     useEffect(() => {
       fetchTopHotel();
-    }, [])
+      if (topBali?.length > 0 && topYogya?.length > 0) {
+        setShowLoading(false)
+      }
+    }, [topBali, topYogya])
 
     useFocusEffect(()=>{
       checkNavigator();
     })
-  
 
     const getList = () => {
       return data?.slice(0,10).map(i => {
@@ -126,7 +130,7 @@ import { useEffect } from 'react';
         <SafeAreaView>
           {/* navbar */}
           <View className="bg-[#405189] flex flex-row justify-between p-3">
-            <Text className="w-20"></Text>
+            <View className="w-20"></View>
             <Text className="text-white text-2xl">Home</Text>
             {showLoginButton && (
               <TouchableOpacity activeOpacity={1.0}>
@@ -213,7 +217,7 @@ import { useEffect } from 'react';
                 {/* button search */}
                 <TouchableOpacity
                   className="p-2 rounded-lg bg-[#405189]"
-                  onPress={fetchApiCall}
+                  onPress={fetchSearchHotel}
                   >
                   <Text className="text-white text-xl text-center font-semibold">Search</Text>
                 </TouchableOpacity>
@@ -224,55 +228,59 @@ import { useEffect } from 'react';
               <View>{getList()}</View>
 
               {/* content */}
-              <View className="bg-white px-4 pt-4 pb-8 rounded-lg">
-                <View className="mb-5">
-                  <Text className="text-black text-lg font-semibold mb-3">POPULAR HOTELS IN BALI</Text>
-                  <ScrollView horizontal={true} className="snap-x">
-                    {topBali?.slice(0,7).map(hotel => {
-                      {Reactotron.log(hotel)}
-                      return <TouchableOpacity key={hotel.id} 
-                        onPress={ ()=> navigation.navigate('Detail', {
-                          hotelName: hotel.name,
-                          hotelPrice: hotel.price?.lead?.formatted,
-                          hotelImage: hotel.propertyImage?.image?.url,
-                          hotelId: hotel.id, 
-                          checkIn: FormatDate(dateIn.toISOString()), 
-                          checkOut: FormatDate(dateOut.toISOString()), 
-                          guest: '2'
-                      })}>
-                        <View className="snap-center">
-                          <ImageBackground source={{uri: hotel.propertyImage?.image?.url}} className="mr-3 w-44 h-40" imageStyle={{ borderRadius: 10}}>
-                              <Text className="text-xl text-white font-semibold absolute bottom-3 px-3" numberOfLines={2}>{hotel.name}</Text>
-                          </ImageBackground>
-                        </View>
-                      </TouchableOpacity>
-                    })}
-                  </ScrollView>
+              {showLoading ? (
+                <LoadingModal />
+              ) : (
+                <View className="bg-white px-4 pt-4 pb-8 rounded-lg">
+                  <View className="mb-5">
+                    <Text className="text-black text-lg font-semibold mb-3">POPULAR HOTELS IN BALI</Text>
+                    <ScrollView horizontal={true} className="snap-x">
+                      {topBali?.slice(0,7).map(hotel => {
+                        {Reactotron.log(hotel)}
+                        return <TouchableOpacity key={hotel.id} 
+                          onPress={ ()=> navigation.navigate('Detail', {
+                            hotelName: hotel.name,
+                            hotelPrice: hotel.price?.lead?.formatted,
+                            hotelImage: hotel.propertyImage?.image?.url,
+                            hotelId: hotel.id, 
+                            checkIn: FormatDate(dateIn.toISOString()), 
+                            checkOut: FormatDate(dateOut.toISOString()), 
+                            guest: '2'
+                        })}>
+                          <View className="snap-center">
+                            <ImageBackground source={{uri: hotel.propertyImage?.image?.url}} className="mr-3 w-44 h-40" imageStyle={{ borderRadius: 10}}>
+                                <Text className="text-xl text-white font-semibold absolute bottom-3 px-3" numberOfLines={2}>{hotel.name}</Text>
+                            </ImageBackground>
+                          </View>
+                        </TouchableOpacity>
+                      })}
+                    </ScrollView>
+                  </View>
+                  <View>
+                    <Text className="text-black text-lg font-semibold mb-3">POPULAR HOTELS IN YOGYAKARTA</Text>
+                    <ScrollView horizontal={true} className="snap-x">
+                      {topYogya?.slice(0,7).map(hotel => {
+                        return <TouchableOpacity key={hotel.id} 
+                          onPress={ ()=> navigation.navigate('Detail', {
+                            hotelName: hotel.name,
+                            hotelPrice: hotel.price?.lead?.formatted,
+                            hotelImage: hotel.propertyImage?.image?.url,
+                            hotelId: hotel.id, 
+                            checkIn: FormatDate(dateIn.toISOString()), 
+                            checkOut: FormatDate(dateOut.toISOString()), 
+                            guest: '2'
+                        })}>
+                          <View className="snap-center" key={hotel.id}>
+                            <ImageBackground source={{uri: hotel.propertyImage?.image?.url}} className="mr-3 w-44 h-40" imageStyle={{ borderRadius: 10}}>
+                                <Text className="text-xl text-white font-semibold absolute bottom-3 px-3" numberOfLines={2}>{hotel.name}</Text>
+                            </ImageBackground>
+                          </View>
+                        </TouchableOpacity>
+                      })}
+                    </ScrollView>
+                  </View>
                 </View>
-                <View>
-                  <Text className="text-black text-lg font-semibold mb-3">POPULAR HOTELS IN YOGYAKARTA</Text>
-                  <ScrollView horizontal={true} className="snap-x">
-                    {topYogya?.slice(0,7).map(hotel => {
-                      return <TouchableOpacity key={hotel.id} 
-                        onPress={ ()=> navigation.navigate('Detail', {
-                          hotelName: hotel.name,
-                          hotelPrice: hotel.price?.lead?.formatted,
-                          hotelImage: hotel.propertyImage?.image?.url,
-                          hotelId: hotel.id, 
-                          checkIn: FormatDate(dateIn.toISOString()), 
-                          checkOut: FormatDate(dateOut.toISOString()), 
-                          guest: '2'
-                      })}>
-                        <View className="snap-center" key={hotel.id}>
-                          <ImageBackground source={{uri: hotel.propertyImage?.image?.url}} className="mr-3 w-44 h-40" imageStyle={{ borderRadius: 10}}>
-                              <Text className="text-xl text-white font-semibold absolute bottom-3 px-3" numberOfLines={2}>{hotel.name}</Text>
-                          </ImageBackground>
-                        </View>
-                      </TouchableOpacity>
-                    })}
-                  </ScrollView>
-                </View>
-              </View>
+              )}
             </View>
           </ScrollView>
         </SafeAreaView>
