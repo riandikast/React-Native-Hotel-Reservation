@@ -1,6 +1,6 @@
 export const searchQuery = async ({inputSearch}) => {
     try {
-        const response = await fetch(`https://hotels-com-provider.p.rapidapi.com/v1/destinations/search?query=${inputSearch}&currency=IDR&locale=en_ID`, {
+        const response = await fetch(`https://hotels-com-provider.p.rapidapi.com/v2/regions?query=${inputSearch}&locale=en_ID`, {
             method: 'GET',
             headers: {
                 'X-RapidAPI-Key': '4f39f63d49msh1bb3ebc9eaf76dfp13a97cjsn4398851ef1d1',
@@ -8,16 +8,17 @@ export const searchQuery = async ({inputSearch}) => {
             }
         });
         const json = await response.json();
-        const destinationId = json.suggestions[0].entities[1].destinationId;
-        return destinationId;
+        const cityId = json.data[1]?.gaiaId;
+        // console.log(json)
+        return cityId;
     } catch (error) {
         console.log(error)
     }
 }
 
-export const getSearchList = async ({ destination, checkIn, checkOut, guest }) => {
+export const getSearchList = async ({ city, checkIn, checkOut, guest }) => {
     try {
-        const response = await fetch(`https://hotels-com-provider.p.rapidapi.com/v1/hotels/search?checkin_date=${checkIn}&checkout_date=${checkOut}&sort_order=STAR_RATING_HIGHEST_FIRST&destination_id=${destination}&adults_number=${guest}&locale=en_US&currency=USD`, {
+        const response = await fetch(`https://hotels-com-provider.p.rapidapi.com/v2/hotels/search?checkout_date=${checkOut}&locale=en_ID&checkin_date=${checkIn}&sort_order=RECOMMENDED&region_id=${city}&adults_number=${guest}&currency=IDR`, {
             method: 'GET',
             headers: {
                 'X-RapidAPI-Key': '4f39f63d49msh1bb3ebc9eaf76dfp13a97cjsn4398851ef1d1',
@@ -25,16 +26,16 @@ export const getSearchList = async ({ destination, checkIn, checkOut, guest }) =
             }
         });
         const json = await response.json();
-        const searchResult = json.searchResults.results;
-        return searchResult;
+        // console.log(json.properties)
+        return json.properties;
     } catch (error) {
         console.log(error)
     }
 }
 
-export const getHotelDetail = async ({id, checkIn, checkOut, guest}) => {
+export const getHotelDetail = async (id) => {
     try {
-        const response = await fetch(`https://hotels-com-provider.p.rapidapi.com/v1/hotels/booking-details?adults_number=${guest}&checkin_date=${checkIn}&locale=en_US&currency=USD&hotel_id=${id}&checkout_date=${checkOut}`, {
+        const response = await fetch(`https://hotels-com-provider.p.rapidapi.com/v2/hotels/details?currency=USD&locale=en_US&hotel_id=${id}`, {
             method: 'GET',
             headers: {
                 'X-RapidAPI-Key': '4f39f63d49msh1bb3ebc9eaf76dfp13a97cjsn4398851ef1d1',
@@ -42,6 +43,7 @@ export const getHotelDetail = async ({id, checkIn, checkOut, guest}) => {
             }
         });
         const json = await response.json();
+        // console.log(json)
         return json;
     } catch (error) {
         console.log(error)

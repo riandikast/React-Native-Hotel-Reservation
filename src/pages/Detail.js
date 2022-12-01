@@ -15,7 +15,7 @@ import {useEffect, useState, useCallback} from 'react';
 import * as React from 'react';
 import RenderHtml from 'react-native-render-html';
 import {getHotelDetail} from '../features/hotelServices';
-import {NavigationContainer, CommonActions} from '@react-navigation/native';
+import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
@@ -38,39 +38,39 @@ export default function Detail({navigation, route}) {
   const [loved, setLoved] = useState(false);
   const [iconChanged, setIconChanged] = useState(false);
   const [loveIcon, setLoveIcon] = useState(require('../assets/Unlove.png'));
-  // const {hotelId, checkIn, checkOut, guest} = route.params;
+  const {hotelId, checkIn, checkOut, guest, hotelName, hotelPrice, hotelPropertyImage} = route.params;
   const [userID, setUserID] = useState();
-  // const id = JSON.stringify(hotelId);
+  const id = Number(hotelId);
   const {width} = useWindowDimensions();
   const dispatch = useDispatch();
+
   const handleBooking = async () => {
     try {
       const loginCheck = await AsyncStorage.getItem('@loginNavigator').then(
         JSON.parse,
       );
-  
-      if (loginCheck) {
 
+      if (loginCheck) {
       } else {
         AsyncStorage.setItem('@temporaryNavigation', 'detail');
-        navigation.navigate('Login')
+        navigation.navigate('Login');
         //milih pake local dr pada pake common action reset karna lebih singkat delay nya
       }
     } catch (err) {}
   };
 
   const getDetail = async () => {
-    const detail = await getDetail({id, checkIn, checkOut, guest});
+    const detail = await getHotelDetail(id);
     setHotel([detail]);
-  }
-  
+  };
+
   const getFavIconState = async () => {
     const favoriteData =
       (await AsyncStorage.getItem('@favorite').then(JSON.parse)) || [];
-
+    Reactotron.log(hotelName)
     dispatch(getFavoriteData({favorite: favoriteData}));
     for (let i = 0; i < favoriteData?.length; i++) {
-      if (favoriteData[i].id === 1) {
+      if (favoriteData[i].id === hotelId) {
         setLoveIcon(require('../assets/Love.png'));
         setLoved(true);
         break;
@@ -92,12 +92,13 @@ export default function Detail({navigation, route}) {
     }
 
     let saveHotel = {
-      id: 1,
+      id: hotelId,
       userid: userID,
-      name: 'nama',
+      name: hotelName,
+      image: hotelPropertyImage,
       description: 'desc',
       location: 'lokasi',
-      price: 'lokasi',
+      price: hotelPrice,
     };
     try {
       const favoriteData = await AsyncStorage.getItem('@favorite').then(
@@ -107,7 +108,7 @@ export default function Detail({navigation, route}) {
       if (!loved) {
         dispatch(addFavorite(saveHotel));
       } else {
-        Reactotron.log(saveHotel.id, 'woi')
+        Reactotron.log(saveHotel.id, 'woi');
         dispatch(removeFavorite({id: saveHotel.id}));
       }
       const data = await AsyncStorage.getItem('@favorite').then(JSON.parse);
@@ -145,7 +146,7 @@ export default function Detail({navigation, route}) {
   const hotelDetail = () => {
     return hotel?.map(i => {
       return (
-        <View key={i.header?.hotelId}>
+        <View key={i.summary?.id}>
           {/* hero */}
           <ImageBackground
             source={exImage}
@@ -155,13 +156,16 @@ export default function Detail({navigation, route}) {
               Hotel Detail
             </Text>
             <View>
-              <Text className="text-white text-3xl font-semibold text-left">
-                {i.name}
+              <Text
+                className="text-white text-3xl font-semibold text-left"
+                numberOfLines={2}>
+                {i.summary?.name}
               </Text>
               <View className="flex flex-row items-center my-1">
                 <Image source={locationIcon} className="w-5 h-5 mr-1" />
                 <Text className="text-white text-md text-left">
-                  {i.address?.cityName}, {i.address?.provinceName}
+                  {i.summary?.location?.address?.city},{' '}
+                  {i.summary?.location?.address?.province}
                 </Text>
               </View>
               <View className="flex flex-row items-center mt-1">
@@ -176,10 +180,12 @@ export default function Detail({navigation, route}) {
           {/* about */}
           <View className="my-3 p-5">
             <Text className="text-black text-xl font-semibold mb-3">ABOUT</Text>
-            {i.smallPrint?.policies?.map(item => {
-              const htmlAbout = {html: `${item}`};
-              return <RenderHtml source={htmlAbout} contentWidth={width} />;
-            })}
+            <Text>
+              {
+                i.propertyContentSectionGroups?.aboutThisProperty?.sections[0]
+                  .bodySubSections[0].elements[0].items[0].content?.text
+              }
+            </Text>
           </View>
 
           {/* facilities */}
@@ -187,24 +193,15 @@ export default function Detail({navigation, route}) {
             <Text className="text-black text-xl font-semibold mb-3">
               FACILITIES
             </Text>
-            {i.amenities[0]?.listItems?.map(items => {
-              return (
-                <View className="mb-3">
-                  <Text className="text-black text-md mb-1">
-                    {items.heading}
+            <ScrollView horizontal={true}>
+              {i.summary?.amenities?.topAmenities?.items.map(item => {
+                return (
+                  <Text className="bg-white w-auto p-2 rounded-lg mr-3">
+                    {item.text}
                   </Text>
-                  <ScrollView horizontal={true}>
-                    {items.listItems?.map(item => {
-                      return (
-                        <View className="bg-white w-auto p-2 rounded-lg mr-3">
-                          <Text>{item}</Text>
-                        </View>
-                      );
-                    })}
-                  </ScrollView>
-                </View>
-              );
-            })}
+                );
+              })}
+            </ScrollView>
           </View>
         </View>
       );
@@ -213,31 +210,35 @@ export default function Detail({navigation, route}) {
 
   return (
     <SafeAreaView>
-      <ScrollView className="mb-10">
-        {/* {hotelDetail()} */}
-      </ScrollView>
-      {/* button booking */}
-      <View className="flex-row">
-        <View className="grow">
-          <TouchableOpacity activeOpacity={1.0}>
-            <Text
-              className="bg-[#405189] fixed bottom-14 w-11/12 mx-auto p-2 mb-12 rounded-lg text-white text-xl font-bold text-center"
-              onPress={handleBooking}>
-              Book this Hotel
-            </Text>
-          </TouchableOpacity>
-        </View>
+      <View className="flex flex-col h-screen ">
         <View>
-          <TouchableWithoutFeedback
-            onPress={changeFavIconState}
-            activeOpacity={1.0}>
-            <Image
-              className={' fixed bottom-14 w-12 h-11 mr-8'}
-              source={loveIcon}
-            />
-          </TouchableWithoutFeedback>
+          <ScrollView className="mb-10">{hotelDetail()}</ScrollView>
+        </View>
+
+        <View className="flex-row  mt-auto ">
+          <View className="grow">
+            <TouchableOpacity activeOpacity={1.0}>
+              <Text
+                className="bg-[#405189] fixed bottom-4 w-11/12 mx-auto p-2 mb-12 rounded-lg text-white text-xl font-bold text-center"
+                onPress={handleBooking}>
+                Book this Hotel
+              </Text>
+            </TouchableOpacity>
+          </View>
+          <View>
+            <TouchableWithoutFeedback
+              onPress={changeFavIconState}
+              activeOpacity={1.0}>
+              <Image
+                className={' fixed bottom-4 w-12 h-11 mr-8'}
+                source={loveIcon}
+              />
+            </TouchableWithoutFeedback>
+          </View>
         </View>
       </View>
+
+      {/* button booking */}
     </SafeAreaView>
   );
 }

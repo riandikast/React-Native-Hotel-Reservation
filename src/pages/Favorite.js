@@ -104,7 +104,7 @@ export default function Favorite({navigation}) {
   return (
     <SafeAreaView>
       <ScrollView>
-        <View>{showLoading ? <LoadingModal /> : favList()}</View>
+        {/* <View>{showLoading ? <LoadingModal /> : favList()}</View> */}
       </ScrollView>
     </SafeAreaView>
   );
