@@ -29,7 +29,6 @@ export const getSearchList = async ({ city, checkIn, checkOut, guest }) => {
         // console.log(json)
         return json.properties;
     } catch (error) {
-        loading;
         console.log(error)
     }
 }

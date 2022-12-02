@@ -63,7 +63,7 @@ const TabNav = () => {
         }}
       />
       <Tab.Screen
-        name="Profiles"
+        name="BookingHistory"
         component={BookingHistory}
         options={{
           tabBarIcon: ({focused, color, size}) => {
@@ -94,6 +94,7 @@ const TabNav = () => {
           unmountOnBlur: true,
         }}
       />
+    
     </Tab.Navigator>
   );
 };
@@ -110,7 +111,7 @@ function MyStack() {
       <Stack.Screen name="Favorite" component={Favorite} />
       <Stack.Screen name="ChangePassword" component={ChangePassword} />
       <Stack.Screen name="Booking" component={Booking} />
-      <Stack.Screen name="BookingHistory" component={BookingHistory} />
+      {/* <Stack.Screen name="BookingHistory" component={BookingHistory} /> */}
     </Stack.Navigator>
   );
 }

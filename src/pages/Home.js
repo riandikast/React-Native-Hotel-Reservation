@@ -99,8 +99,8 @@ import LoadingModal from '../components/LoadingModal';
     useEffect(() => {
       fetchTopHotel();
     }, [])
-
-    React.useLayoutEffect(()=>{
+    
+    useFocusEffect(() => {
       checkNavigator();
     })
 
