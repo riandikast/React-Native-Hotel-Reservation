@@ -47,6 +47,7 @@ export default function Detail({navigation, route}) {
   const id = Number(hotelId);
   const {width} = useWindowDimensions();
   const [showLoading, setShowLoading] = useState(true);
+  const [refresh, setRefresh] = useState();
   const dispatch = useDispatch();
 
   const handleBooking = async () => {
@@ -82,7 +83,7 @@ export default function Detail({navigation, route}) {
   };
 
   const getDetail = async () => {
-    const detail = await getHotelDetail(id);
+    const detail = await getHotelDetail(id, setShowLoading(false));
     setHotel([detail]);
   };
 
@@ -90,13 +91,19 @@ export default function Detail({navigation, route}) {
     try {
       const favoriteData =
         (await AsyncStorage.getItem('@favorite').then(JSON.parse)) || [];
-      const findUser = favoriteData.filter(data => data.userid === userID);
+      const temporaryUserID =
+        (await AsyncStorage.getItem('@temporaryUserID').then(JSON.parse)) || [];
+
+      const findUser = favoriteData.filter(
+        data => data.userid === temporaryUserID,
+      );
+      Reactotron.log(favoriteData);
       Reactotron.log(findUser, 'check array');
       for (let i = 0; i < findUser?.length; i++) {
         if (findUser[i].id === hotelId) {
           setLoveIcon(require('../assets/Love.png'));
           setLoved(true);
-          break; 
+          break;
         } else {
           setLoveIcon(require('../assets/Unlove.png'));
         }
@@ -116,10 +123,12 @@ export default function Detail({navigation, route}) {
       setIconChanged(true);
       setLoved(true);
     }
+    const temporaryUserID =
+    (await AsyncStorage.getItem('@temporaryUserID').then(JSON.parse)) || [];
 
     let saveHotel = {
       id: hotelId,
-      userid: userID,
+      userid: temporaryUserID,
       name: hotelName,
       image: hotelImage,
       description: hotelDesc,
@@ -127,11 +136,14 @@ export default function Detail({navigation, route}) {
       price: hotelPrice,
       checkIn: checkIn,
       checkOut: checkOut,
+      facility: hotelFacility,
     };
     try {
       const favoriteData = await AsyncStorage.getItem('@favorite').then(
         JSON.parse || [],
       );
+
+      Reactotron.log(hotelFacility, 'fasilitas');
       checkData({favorite: favoriteData, id: saveHotel.id});
       if (!loved) {
         dispatch(addFavorite(saveHotel));
@@ -167,58 +179,50 @@ export default function Detail({navigation, route}) {
   };
 
   const getUserData = async () => {
-  
+    try {
       const accountData = await AsyncStorage.getItem('@account').then(
         JSON.parse,
       );
+
       accountData.map(acc => {
         if (acc.isLogin) {
-          Reactotron.log(userID, 'check id user');
-    
-          setUserID(acc.id)
+          AsyncStorage.setItem('@temporaryUserID', JSON.stringify(acc.id));
+          // setUserID(acc.id)
+          // Reactotron.log(userID, 'check user id')
         }
       });
-
+    } catch (error) {}
   };
-
 
   const getHotelInformation = () => {
     hotel?.map(hotel => {
       setHotelLocation(hotel.summary?.location?.address?.city);
+      setHotelDesc(
+        hotel.propertyContentSectionGroups?.aboutThisProperty?.sections[0]
+          .bodySubSections[0].elements[0].items[0].content?.text,
+      );
 
+      setHotelFacility(hotel.summary?.amenities?.topAmenities?.items);
       setShowLoading(false);
     });
   };
 
-  const offlineHotelInformation = () => {
-    setHotelDesc(
-      hotel.propertyContentSectionGroups?.aboutThisProperty?.sections[0]
-        .bodySubSections[0].elements[0].items[0].content?.text,
-    );
-
-    setHotelFacility(hotel.summary?.amenities?.topAmenities?.items);
-  };
   useEffect(() => {
     getDetail();
     getFavIconState();
     getUserData();
   }, [navigation]);
 
-
-
-  useEffect(() => {
-    if (iconChanged) {
-      favoriteState();
-    }
-  }, [loved]);
+  useFocusEffect(
+    useCallback(() => {
+      getUserData();
+    }, []),
+  );
 
   useEffect(() => {}, [hotelFacility]);
-  useFocusEffect(()=>{
-
-  })
+  useFocusEffect(() => {});
   React.useLayoutEffect(() => {
     getHotelInformation();
- 
   });
 
   const hotelDetail = () => {
@@ -260,8 +264,7 @@ export default function Detail({navigation, route}) {
             <Text className="text-black text-xl font-semibold mb-3">ABOUT</Text>
             <Text>
               {i.propertyContentSectionGroups?.aboutThisProperty?.sections[0]
-                .bodySubSections[0].elements[0].items[0].content?.text ||
-                hotelDesc}
+                .bodySubSections[0].elements[0].items[0].content?.text }
             </Text>
           </View>
 

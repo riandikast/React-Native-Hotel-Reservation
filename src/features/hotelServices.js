@@ -16,7 +16,7 @@ export const searchQuery = async ({inputSearch}) => {
     }
 }
 
-export const getSearchList = async ({ city, checkIn, checkOut, guest }) => {
+export const getSearchList = async ({ city, checkIn, checkOut, guest,  cancelLoading }) => {
     try {
         const response = await fetch(`https://hotels-com-provider.p.rapidapi.com/v2/hotels/search?checkin_date=${checkIn}&locale=en_US&domain=US&checkout_date=${checkOut}&region_id=${city}&sort_order=RECOMMENDED&adults_number=${guest}`, {
             method: 'GET',
@@ -29,6 +29,7 @@ export const getSearchList = async ({ city, checkIn, checkOut, guest }) => {
         // console.log(json)
         return json.properties;
     } catch (error) {
+        cancelLoading
         console.log(error)
     }
 }
@@ -46,6 +47,7 @@ export const getHotelDetail = async (id) => {
         console.log(json)
         return json;
     } catch (error) {
+
         console.log(error)
     }
 }

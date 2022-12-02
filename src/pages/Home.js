@@ -74,7 +74,8 @@ import LoadingModal from '../components/LoadingModal';
           city: '8956', 
           checkIn: FormatDate(dateIn.toISOString()), 
           checkOut: FormatDate(dateOut.toISOString()), 
-          guest: '2'
+          guest: '2',
+          // showLoading={setShowLoading(false)}
         }
       );
       const yogyaHotel = await getSearchList(
@@ -92,15 +93,18 @@ import LoadingModal from '../components/LoadingModal';
     useEffect(() => {
       fetchTopHotel();
     }, [])
+    useFocusEffect(() => {
+      checkNavigator();
+    })
 
     React.useLayoutEffect(()=>{
-      checkNavigator();
+ 
     })
 
     useLayoutEffect(() => {
       setTimeout(() => {
         setShowLoading(false)
-      }, 5000)
+      }, 1000)
     })
 
     const getList = () => {
