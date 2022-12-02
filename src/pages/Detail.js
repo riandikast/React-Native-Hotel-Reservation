@@ -209,8 +209,8 @@ export default function Detail({navigation, route}) {
 
   useEffect(() => {
     getDetail();
-    getFavIconState();
-    getUserData();
+    getFavIconState(); 
+    getUserData(); 
   }, [navigation]);
 
   useFocusEffect(
