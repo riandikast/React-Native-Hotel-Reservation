@@ -66,6 +66,7 @@ export default function Detail({navigation, route}) {
           hotelPrice: hotelPrice,
           guest: '2',
         });
+
       } else {
         AsyncStorage.setItem('@temporaryNavigation', 'detail');
         navigation.navigate('Login', {
@@ -88,6 +89,7 @@ export default function Detail({navigation, route}) {
   };
 
   const getFavIconState = async () => {
+
     try {
       const favoriteData =
         (await AsyncStorage.getItem('@favorite').then(JSON.parse)) || [];
@@ -97,6 +99,7 @@ export default function Detail({navigation, route}) {
       const findUser = favoriteData.filter(
         data => data.userid === temporaryUserID,
       );
+
       Reactotron.log(favoriteData);
       Reactotron.log(findUser, 'check array');
       for (let i = 0; i < findUser?.length; i++) {
@@ -156,6 +159,7 @@ export default function Detail({navigation, route}) {
   };
 
   const handleFavoriteTap = async () => {
+    
     try {
       const loginCheck = await AsyncStorage.getItem('@loginNavigator').then(
         JSON.parse,

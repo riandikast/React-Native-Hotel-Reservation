@@ -19,10 +19,12 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {useState, useEffect} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import LoadingModal from '../components/LoadingModal';
+import {set} from 'date-fns';
 export default function Favorite({navigation, route}) {
   const [dataFavorite, setDataFavorite] = useState([]);
   const [id, setID] = useState();
   const [isLogin, setIsLogin] = useState();
+  const [isData, setIsData] = useState();
   const [showLoading, setShowLoading] = useState(true);
   const getFavorite = async () => {
     const data = await AsyncStorage.getItem('@favorite').then(JSON.parse);
@@ -37,7 +39,7 @@ export default function Favorite({navigation, route}) {
       accountData.map(acc => {
         if (acc.isLogin) {
           setID(acc.id);
-          
+
           setShowLoading(false);
         }
       });
@@ -45,7 +47,6 @@ export default function Favorite({navigation, route}) {
   };
 
   const favList = () => {
-
     return dataFavorite?.map(i => {
       if (id === i.userid) {
         return (
@@ -82,6 +83,22 @@ export default function Favorite({navigation, route}) {
     });
   };
 
+  const checkData = async () => {
+    if (dataFavorite.length > 0) {
+      setIsData(true);
+      for (let i = 0; i < dataFavorite?.length; i++) {
+        Reactotron.log(dataFavorite[i].userid);
+        if (dataFavorite[i].userid === id) {
+          setIsData(true);
+        } else {
+          setIsData(false);
+        }
+      }
+    } else {
+      setIsData(false);
+    }
+  };
+
   const checkNavigator = async () => {
     try {
       const loginCheck = await AsyncStorage.getItem('@loginNavigator').then(
@@ -107,9 +124,20 @@ export default function Favorite({navigation, route}) {
     } catch (error) {}
   };
 
+  const noData = () => {
+    return (
+      <>
+        <View className="w-screen h-[90vh] flex justify-center items-center">
+          <Text className="text-2xl">No Data Yet</Text>
+        </View>
+      </>
+    );
+  };
+  
   useEffect(() => {
     checkNavigator();
     getUserData();
+    checkData();
   }, [navigation]);
 
   React.useLayoutEffect(() => {
@@ -136,7 +164,9 @@ export default function Favorite({navigation, route}) {
         <View className="grow"></View>
       </View>
       <ScrollView>
-        <View>{showLoading ? <LoadingModal /> : favList()}</View>
+        <View>
+          {showLoading ? <LoadingModal /> : isData ? favList() : noData()}
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
