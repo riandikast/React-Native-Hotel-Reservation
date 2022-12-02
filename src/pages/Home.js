@@ -32,7 +32,7 @@ import LoadingModal from '../components/LoadingModal';
     const [inputSearch, setInputSearch] = useState('');
     const [inputGuest, setInputGuest] = useState('');
     const [showLoginButton, setShowLoginButton] = useState(true);
-    const [showLoading, setShowLoading] = useState(true);
+    const [showLoading, setShowLoading] = useState(false);
 
     const checkNavigator = async () => {
       try {

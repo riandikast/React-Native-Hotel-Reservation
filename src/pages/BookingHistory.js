@@ -25,6 +25,7 @@ export default function BookingHistory({navigation, route}) {
   const [id, setID] = useState();
   const [isLogin, setIsLogin] = useState();
   const [showLoading, setShowLoading] = useState(true);
+  const [isData, setIsData] = useState();
   const getHistory = async () => {
     const data = await AsyncStorage.getItem('@booking').then(JSON.parse);
     setDataBooking(data);
@@ -97,9 +98,35 @@ export default function BookingHistory({navigation, route}) {
     } catch (error) {}
   };
 
+  const checkData = async () => {
+    if (dataBooking.length > 0) {
+      setIsData(true);
+      for (let i = 0; i < dataBooking?.length; i++) {
+        Reactotron.log(dataBooking[i].userid);
+        if (dataBooking[i].userid === id) {
+          setIsData(true);
+        } else {
+          setIsData(false);
+        }
+      }
+    } else {
+      setIsData(false);
+    }
+  };
+
+  const noData = () => {
+    return (
+      <>
+        <View className="w-screen h-[80vh]  right-10  bottom-5 flex justify-center items-center">
+          <Text className="text-2xl">No Data Yet</Text>
+        </View>
+      </>
+    );
+  };
   useEffect(() => {
     checkNavigator();
     getUserData();
+    checkData()
   }, [navigation]);
 
   React.useLayoutEffect(() => {
@@ -126,7 +153,7 @@ export default function BookingHistory({navigation, route}) {
         <View className="w-3/12"></View>
       </View>
       <ScrollView>
-        <View className="px-8 pt-8 pb-20">{showLoading ? <LoadingModal /> : historyList()}</View>
+        <View className="px-8 pt-8 pb-20">{showLoading ? <LoadingModal /> : isData ? historyList() : noData()}</View>
       </ScrollView>
     </SafeAreaView>
   );
