@@ -44,6 +44,7 @@ export default function Favorite({navigation, route}) {
   };
 
   const favList = () => {
+
     return dataFavorite?.map(i => {
       if (id === i.userid) {
         return (
@@ -57,6 +58,7 @@ export default function Favorite({navigation, route}) {
                 hotelId: i.id,
                 checkIn: i.checkIn,
                 checkOut: i.checkOut,
+                hotelPrice: i.price,
                 guest: '2',
               })
             }>
