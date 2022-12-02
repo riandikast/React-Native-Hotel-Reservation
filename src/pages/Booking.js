@@ -202,7 +202,7 @@ export default function Booking({navigation, route}) {
       totalPrice: totalPrice,
     };
     dispatch(bookingHotel(bookingData));
-    navigation.navigate('')
+    navigation.navigate('BookingHistory')
   };
 
   const getOldBookingData = async () => {

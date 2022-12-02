@@ -8,7 +8,6 @@ import Register from './src/pages/Register';
 import FlashMessage from 'react-native-flash-message';
 import Home from './src/pages/Home';
 import Favorite from './src/pages/Favorite';
-import Profile from './src/pages/Profile';
 import Settings from './src/pages/Settings';
 import Splashscreen from './src/pages/Splashscreen';
 import ChangePassword from './src/pages/ChangePassword';
@@ -111,6 +110,7 @@ function MyStack() {
       <Stack.Screen name="Favorite" component={Favorite} />
       <Stack.Screen name="ChangePassword" component={ChangePassword} />
       <Stack.Screen name="Booking" component={Booking} />
+      <Stack.Screen name="BookingHistory" component={BookingHistory} />
     </Stack.Navigator>
   );
 }
