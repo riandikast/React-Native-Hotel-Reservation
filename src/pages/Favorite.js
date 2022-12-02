@@ -24,7 +24,7 @@ export default function Favorite({navigation, route}) {
   const [dataFavorite, setDataFavorite] = useState([]);
   const [id, setID] = useState();
   const [isLogin, setIsLogin] = useState();
-  const [isData, setIsData] = useState();
+  const [isData, setIsData] = useState(true);
   const [showLoading, setShowLoading] = useState(true);
   const getFavorite = async () => {
     const data = await AsyncStorage.getItem('@favorite').then(JSON.parse);
@@ -50,6 +50,7 @@ export default function Favorite({navigation, route}) {
     return dataFavorite?.map(i => {
       if (id === i.userid) {
         return (
+          <View className="bg-white rounded-xl my-3">
           <TouchableOpacity
             className="z-10 bg-white rounded-xl my-3"
             key={i.id}
@@ -78,6 +79,8 @@ export default function Favorite({navigation, route}) {
               <Text className="text-md ">{i.location}</Text>
             </View>
           </TouchableOpacity>
+          </View>
+
         );
       }
     });
@@ -137,15 +140,18 @@ export default function Favorite({navigation, route}) {
   useEffect(() => {
     checkNavigator();
     getUserData();
-    checkData();
+   
+    Reactotron.log(showLoading)
   }, [navigation]);
 
   React.useLayoutEffect(() => {
     getFavorite();
+    checkData();
   });
 
   return (
     <SafeAreaView>
+    
       <View className="bg-[#405189]  flex  flex-row">
         <View className="mb-4 grow">
           <TouchableWithoutFeedback
@@ -164,8 +170,8 @@ export default function Favorite({navigation, route}) {
         <View className="grow"></View>
       </View>
       <ScrollView>
-        <View>
-          {showLoading ? <LoadingModal /> : isData ? favList() : noData()}
+        <View> 
+          {showLoading? <LoadingModal/> : isData ? favList() : noData()}
         </View>
       </ScrollView>
     </SafeAreaView>

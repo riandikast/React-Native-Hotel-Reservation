@@ -32,7 +32,7 @@ import LoadingModal from '../components/LoadingModal';
     const [inputSearch, setInputSearch] = useState('');
     const [inputGuest, setInputGuest] = useState('');
     const [showLoginButton, setShowLoginButton] = useState(true);
-    const [showLoading, setShowLoading] = useState(false);
+    const [showLoading, setShowLoading] = useState(true);
 
     const checkNavigator = async () => {
       try {
@@ -90,7 +90,7 @@ import LoadingModal from '../components/LoadingModal';
       );
       setTopBali(baliHotel);
       setTopYogya(yogyaHotel);
-      if (topBali.length > 0 && topYogya.length > 0) {
+      if (topBali.length > 0) {
       setShowLoading(false)
 
       }

@@ -19,16 +19,7 @@ export const favoriteSlice = createSlice({
       state.favorite = action.payload.favorite;
     },
     addFavorite: (state, action) => {
-      // state.favorite = action.payload.favorite;
-      // state.favorite.forEach(fav => {
-      //   if (fav.id !== action.payload.id) {
-      //     state.valid = true;
-      //     state.favorite = [...state.favorite, action.payload];
-      //     throw BreakException;
-      //   } else {
-      //     state.valid = false;
-      //   }
-      // });
+ 
 
       if (state.valid) {
         state.favorite = [...state.favorite, action.payload];

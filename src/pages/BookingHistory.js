@@ -26,6 +26,7 @@ export default function BookingHistory({navigation, route}) {
   const [isLogin, setIsLogin] = useState();
   const [showLoading, setShowLoading] = useState(true);
   const [isData, setIsData] = useState();
+
   const getHistory = async () => {
     const data = await AsyncStorage.getItem('@booking').then(JSON.parse);
     setDataBooking(data);
@@ -47,31 +48,44 @@ export default function BookingHistory({navigation, route}) {
 
   const historyList = () => {
     return dataBooking?.map(i => {
-        if (id === i.userid) {
+      if (id === i.userid) {
         return (
           <View className="bg-white rounded-xl my-3">
             <View className="flex flex-row justify-between p-3">
-              <Image source={{uri: i.image}} className="w-40 h-44 my-auto object-contain rounded-lg"/>
+              <Image
+                source={{uri: i.image}}
+                className="w-40 h-44 my-auto object-contain rounded-lg"
+              />
               <View className="w-3/5">
-              <Text className='text-black text-xl font-semibold mb-1' numberOfLines={2}>{i.hotelName}</Text>
+                <Text
+                  className="text-black text-xl font-semibold mb-1"
+                  numberOfLines={2}>
+                  {i.hotelName}
+                </Text>
                 <View className="flex flex-row justify-end mt-1">
                   <Text className="text-black text-lg">{i.name}</Text>
                 </View>
                 <View className="flex flex-row justify-end mt-1">
                   <Text className="text-black text-lg">{i.email}</Text>
                 </View>
-                <Text className="text-black text-lg font-semibold mt-2">{i.totalDay} Day, {i.totalRoom} Room, {i.guest} Guest</Text>
+                <Text className="text-black text-lg font-semibold mt-2">
+                  {i.totalDay} Day, {i.totalRoom} Room, {i.guest} Guest
+                </Text>
                 <View className="flex flex-row justify-between mt-1">
-                  <Text className="text-black font-semibold text-lg">Total</Text>
-                  <Text className="text-black font-semibold text-lg">${i.totalPrice}</Text>
+                  <Text className="text-black font-semibold text-lg">
+                    Total
+                  </Text>
+                  <Text className="text-black font-semibold text-lg">
+                    ${i.totalPrice}
+                  </Text>
                 </View>
               </View>
             </View>
           </View>
-        )
+        );
       }
-    })
-  }
+    });
+  };
 
   const checkNavigator = async () => {
     try {
@@ -126,12 +140,12 @@ export default function BookingHistory({navigation, route}) {
   useEffect(() => {
     checkNavigator();
     getUserData();
-    checkData()
   }, [navigation]);
 
   React.useLayoutEffect(() => {
     getHistory();
-  }, []);
+    checkData();
+  });
 
   return (
     <SafeAreaView>
@@ -153,7 +167,9 @@ export default function BookingHistory({navigation, route}) {
         <View className="w-3/12"></View>
       </View>
       <ScrollView>
-        <View className="px-8 pt-8 pb-20">{showLoading ? <LoadingModal /> : isData ? historyList() : noData()}</View>
+        <View className="px-8 pt-8 pb-20">
+          {showLoading ? <LoadingModal /> : isData ? historyList() : noData()}
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
