@@ -56,7 +56,7 @@ export default function Detail({navigation, route}) {
       );
 
       if (loginCheck) {
-        navigation.navigate('Booking' , {
+        navigation.navigate('Booking', {
           hotelName: hotelName,
           hotelImage: hotelImage,
           hotelId: hotelId,
@@ -82,31 +82,28 @@ export default function Detail({navigation, route}) {
   };
 
   const getDetail = async () => {
-   
     const detail = await getHotelDetail(id);
     setHotel([detail]);
   };
 
   const getFavIconState = async () => {
-    const favoriteData =
-      (await AsyncStorage.getItem('@favorite').then(JSON.parse)) || [];
-    dispatch(getFavoriteData({favorite: favoriteData}));
     try {
-      for (let i = 0; i < favoriteData?.length; i++) {
-    
-        let findUser = favoriteData.find((data)=> data.userid === userID)
-        if (findUser.id === hotelId) {
+      const favoriteData =
+        (await AsyncStorage.getItem('@favorite').then(JSON.parse)) || [];
+      const findUser = favoriteData.filter(data => data.userid === userID);
+      Reactotron.log(findUser, 'check array');
+      for (let i = 0; i < findUser?.length; i++) {
+        if (findUser[i].id === hotelId) {
           setLoveIcon(require('../assets/Love.png'));
           setLoved(true);
-          break;
+          break; 
         } else {
           setLoveIcon(require('../assets/Unlove.png'));
         }
       }
-    } catch (error) {
-      
-    }
 
+      dispatch(getFavoriteData({favorite: favoriteData}));
+    } catch (error) {}
   };
 
   const changeFavIconState = async () => {
@@ -143,7 +140,6 @@ export default function Detail({navigation, route}) {
         dispatch(removeFavorite({id: saveHotel.id}));
       }
       const data = await AsyncStorage.getItem('@favorite').then(JSON.parse);
-      Reactotron.log(data);
     } catch (error) {}
   };
 
@@ -171,24 +167,25 @@ export default function Detail({navigation, route}) {
   };
 
   const getUserData = async () => {
-    try {
+  
       const accountData = await AsyncStorage.getItem('@account').then(
         JSON.parse,
       );
       accountData.map(acc => {
         if (acc.isLogin) {
-
-          setUserID(acc.id);
+          Reactotron.log(userID, 'check id user');
+    
+          setUserID(acc.id)
         }
       });
-    } catch (err) {}
+
   };
 
-  const favoriteState = async () => {};
+
   const getHotelInformation = () => {
     hotel?.map(hotel => {
       setHotelLocation(hotel.summary?.location?.address?.city);
-   
+
       setShowLoading(false);
     });
   };
@@ -199,14 +196,15 @@ export default function Detail({navigation, route}) {
         .bodySubSections[0].elements[0].items[0].content?.text,
     );
 
-    setHotelFacility(hotel.summary?.amenities?.topAmenities?.items)
-  }
+    setHotelFacility(hotel.summary?.amenities?.topAmenities?.items);
+  };
   useEffect(() => {
     getDetail();
-
+    getFavIconState();
     getUserData();
+  }, [navigation]);
 
-  }, []);
+
 
   useEffect(() => {
     if (iconChanged) {
@@ -214,14 +212,13 @@ export default function Detail({navigation, route}) {
     }
   }, [loved]);
 
-  useEffect(() => {
-   
-  }, [hotelFacility]);
+  useEffect(() => {}, [hotelFacility]);
+  useFocusEffect(()=>{
 
-
+  })
   React.useLayoutEffect(() => {
     getHotelInformation();
-    getFavIconState();
+ 
   });
 
   const hotelDetail = () => {
@@ -262,10 +259,9 @@ export default function Detail({navigation, route}) {
           <View className="my-3 p-5">
             <Text className="text-black text-xl font-semibold mb-3">ABOUT</Text>
             <Text>
-              {
-                i.propertyContentSectionGroups?.aboutThisProperty?.sections[0]
-                  .bodySubSections[0].elements[0].items[0].content?.text || hotelDesc
-              }
+              {i.propertyContentSectionGroups?.aboutThisProperty?.sections[0]
+                .bodySubSections[0].elements[0].items[0].content?.text ||
+                hotelDesc}
             </Text>
           </View>
 

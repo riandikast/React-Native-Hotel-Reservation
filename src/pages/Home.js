@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
 } from 'react-native';  
 import { useLayoutEffect, useState } from 'react';
+import * as React from 'react';
 import DatePicker from 'react-native-date-picker'
 import {NavigationContainer, useFocusEffect} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
@@ -92,7 +93,7 @@ import LoadingModal from '../components/LoadingModal';
       fetchTopHotel();
     }, [])
 
-    useFocusEffect(()=>{
+    React.useLayoutEffect(()=>{
       checkNavigator();
     })
 
