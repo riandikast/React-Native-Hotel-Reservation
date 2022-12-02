@@ -37,6 +37,7 @@ export default function Favorite({navigation, route}) {
       accountData.map(acc => {
         if (acc.isLogin) {
           setID(acc.id);
+          
           setShowLoading(false);
         }
       });

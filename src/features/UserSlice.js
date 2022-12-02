@@ -119,7 +119,7 @@ export const accountSlice = createSlice({
           AsyncStorage.setItem('@account', JSON.stringify(state.account));
           AsyncStorage.removeItem('@loginNavigator');
           CustomAlert('You are Logged Out', 'center',     require('../assets/Success.png'));
-          throw BreakException;
+    
         }
       });
     },
