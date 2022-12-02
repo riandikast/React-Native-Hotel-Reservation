@@ -9,7 +9,7 @@ export const searchQuery = async ({inputSearch}) => {
         });
         const json = await response.json();
         const cityId = json.data[1]?.gaiaId;
-        console.log(json)
+        // console.log(json)
         return cityId;
     } catch (error) {
         console.log(error)
@@ -29,6 +29,7 @@ export const getSearchList = async ({ city, checkIn, checkOut, guest }) => {
         // console.log(json)
         return json.properties;
     } catch (error) {
+        loading;
         console.log(error)
     }
 }
@@ -43,7 +44,7 @@ export const getHotelDetail = async (id) => {
             }
         });
         const json = await response.json();
-        console.log(json)
+        // console.log(json)
         return json;
     } catch (error) {
         console.log(error)
