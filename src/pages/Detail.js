@@ -84,7 +84,7 @@ export default function Detail({navigation, route}) {
   };
 
   const getDetail = async () => {
-    const detail = await getHotelDetail(id, setShowLoading(false));
+    const detail = await getHotelDetail(id);
     setHotel([detail]);
   };
 
