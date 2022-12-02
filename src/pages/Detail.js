@@ -42,6 +42,7 @@ export default function Detail({navigation, route}) {
     route.params;
   const [hotelLocation, setHotelLocation] = useState();
   const [hotelDesc, setHotelDesc] = useState();
+  const [hotelFacility, setHotelFacility] = useState();
   const [userID, setUserID] = useState();
   const id = Number(hotelId);
   const {width} = useWindowDimensions();
@@ -55,7 +56,15 @@ export default function Detail({navigation, route}) {
       );
 
       if (loginCheck) {
-        navigation.navigate('Booking');
+        navigation.navigate('Booking' , {
+          hotelName: hotelName,
+          hotelImage: hotelImage,
+          hotelId: hotelId,
+          checkIn: checkIn,
+          checkOut: checkOut,
+          hotelPrice: hotelPrice,
+          guest: '2',
+        });
       } else {
         AsyncStorage.setItem('@temporaryNavigation', 'detail');
         navigation.navigate('Login', {
@@ -64,6 +73,7 @@ export default function Detail({navigation, route}) {
           hotelId: hotelId,
           checkIn: checkIn,
           checkOut: checkOut,
+          hotelPrice: hotelPrice,
           guest: '2',
         });
         //milih pake local dr pada pake common action reset karna lebih singkat delay nya
@@ -72,6 +82,7 @@ export default function Detail({navigation, route}) {
   };
 
   const getDetail = async () => {
+   
     const detail = await getHotelDetail(id);
     setHotel([detail]);
   };
@@ -79,17 +90,23 @@ export default function Detail({navigation, route}) {
   const getFavIconState = async () => {
     const favoriteData =
       (await AsyncStorage.getItem('@favorite').then(JSON.parse)) || [];
-    Reactotron.log(hotelName);
     dispatch(getFavoriteData({favorite: favoriteData}));
-    for (let i = 0; i < favoriteData?.length; i++) {
-      if (favoriteData[i].id === hotelId) {
-        setLoveIcon(require('../assets/Love.png'));
-        setLoved(true);
-        break;
-      } else {
-        setLoveIcon(require('../assets/Unlove.png'));
+    try {
+      for (let i = 0; i < favoriteData?.length; i++) {
+    
+        let findUser = favoriteData.find((data)=> data.userid === userID)
+        if (findUser.id === hotelId) {
+          setLoveIcon(require('../assets/Love.png'));
+          setLoved(true);
+          break;
+        } else {
+          setLoveIcon(require('../assets/Unlove.png'));
+        }
       }
+    } catch (error) {
+      
     }
+
   };
 
   const changeFavIconState = async () => {
@@ -130,6 +147,29 @@ export default function Detail({navigation, route}) {
     } catch (error) {}
   };
 
+  const handleFavoriteTap = async () => {
+    try {
+      const loginCheck = await AsyncStorage.getItem('@loginNavigator').then(
+        JSON.parse,
+      );
+
+      if (loginCheck) {
+        changeFavIconState();
+      } else {
+        AsyncStorage.setItem('@temporaryNavigation', 'detail');
+        navigation.navigate('Login', {
+          hotelName: hotelName,
+          hotelImage: hotelImage,
+          hotelId: hotelId,
+          checkIn: checkIn,
+          checkOut: checkOut,
+          guest: '2',
+        });
+        //milih pake local dr pada pake common action reset karna lebih singkat delay nya
+      }
+    } catch (err) {}
+  };
+
   const getUserData = async () => {
     try {
       const accountData = await AsyncStorage.getItem('@account').then(
@@ -137,6 +177,7 @@ export default function Detail({navigation, route}) {
       );
       accountData.map(acc => {
         if (acc.isLogin) {
+
           setUserID(acc.id);
         }
       });
@@ -144,30 +185,43 @@ export default function Detail({navigation, route}) {
   };
 
   const favoriteState = async () => {};
-  const getHotelLocation = () => {
+  const getHotelInformation = () => {
     hotel?.map(hotel => {
       setHotelLocation(hotel.summary?.location?.address?.city);
-      setHotelDesc(
-        hotel.propertyContentSectionGroups?.aboutThisProperty?.sections[0]
-          .bodySubSections[0].elements[0].items[0].content?.text,
-      );
+   
       setShowLoading(false);
     });
   };
+
+  const offlineHotelInformation = () => {
+    setHotelDesc(
+      hotel.propertyContentSectionGroups?.aboutThisProperty?.sections[0]
+        .bodySubSections[0].elements[0].items[0].content?.text,
+    );
+
+    setHotelFacility(hotel.summary?.amenities?.topAmenities?.items)
+  }
   useEffect(() => {
     getDetail();
-    getFavIconState();
+
+    getUserData();
+
   }, []);
 
   useEffect(() => {
-    getUserData();
     if (iconChanged) {
       favoriteState();
     }
   }, [loved]);
 
+  useEffect(() => {
+   
+  }, [hotelFacility]);
+
+
   React.useLayoutEffect(() => {
-    getHotelLocation();
+    getHotelInformation();
+    getFavIconState();
   });
 
   const hotelDetail = () => {
@@ -210,7 +264,7 @@ export default function Detail({navigation, route}) {
             <Text>
               {
                 i.propertyContentSectionGroups?.aboutThisProperty?.sections[0]
-                  .bodySubSections[0].elements[0].items[0].content?.text
+                  .bodySubSections[0].elements[0].items[0].content?.text || hotelDesc
               }
             </Text>
           </View>
@@ -258,7 +312,7 @@ export default function Detail({navigation, route}) {
               </View>
               <View>
                 <TouchableWithoutFeedback
-                  onPress={changeFavIconState}
+                  onPress={handleFavoriteTap}
                   activeOpacity={1.0}>
                   <Image
                     className={' fixed bottom-4 w-12 h-11 mr-8'}

@@ -24,6 +24,7 @@ export default function ImagePickerDialog({
       backButtonClose={true}
       onClosed={onClosed}
       isOpen={isShow}
+      backdrop={false}
       style={{backgroundColor: '#405189', marginTop: 600}}
       position={'bottom'}>
       <View className="flex flex-col z-50 ">

@@ -25,7 +25,7 @@ export default function Login({navigation, route}) {
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
   const [isinput, setIsInput] = useState(false);
-  const {hotelId, checkIn, checkOut, guest, hotelName, hotelPrice, hotelImage} = route.params;
+
   const dispatch = useDispatch();
   const checkTextInput = () => {
     if (email && password) {
@@ -59,6 +59,7 @@ export default function Login({navigation, route}) {
         if (navigator === 'home') {
           navigation.navigate('Home');
         } else if (navigator === 'detail') {
+          const {hotelId, checkIn, checkOut, guest, hotelName, hotelPrice, hotelImage} = route.params;
           navigation.navigate('Detail', {
             hotelName: hotelName,
             hotelImage: hotelImage,
