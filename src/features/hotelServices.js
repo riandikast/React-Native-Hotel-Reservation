@@ -9,14 +9,14 @@ export const searchQuery = async ({inputSearch}) => {
         });
         const json = await response.json();
         const cityId = json.data[1]?.gaiaId;
-        console.log(json)
+        // console.log(json)
         return cityId;
     } catch (error) {
         console.log(error)
     }
 }
 
-export const getSearchList = async ({ city, checkIn, checkOut, guest,  cancelLoading }) => {
+export const getSearchList = async ({ city, checkIn, checkOut, guest }) => {
     try {
         const response = await fetch(`https://hotels-com-provider.p.rapidapi.com/v2/hotels/search?checkin_date=${checkIn}&locale=en_US&domain=US&checkout_date=${checkOut}&region_id=${city}&sort_order=RECOMMENDED&adults_number=${guest}`, {
             method: 'GET',
@@ -29,7 +29,6 @@ export const getSearchList = async ({ city, checkIn, checkOut, guest,  cancelLoa
         // console.log(json)
         return json.properties;
     } catch (error) {
-        cancelLoading
         console.log(error)
     }
 }
@@ -44,10 +43,9 @@ export const getHotelDetail = async (id) => {
             }
         });
         const json = await response.json();
-        console.log(json)
+        // console.log(json)
         return json;
     } catch (error) {
-
         console.log(error)
     }
 }

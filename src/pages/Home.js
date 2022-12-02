@@ -66,6 +66,9 @@ import LoadingModal from '../components/LoadingModal';
         }
       );
       setData(searchList);
+      if (data.length > 0) {
+        setShowLoading(false)
+        }
     }
 
     const fetchTopHotel = async () => {
@@ -75,7 +78,6 @@ import LoadingModal from '../components/LoadingModal';
           checkIn: FormatDate(dateIn.toISOString()), 
           checkOut: FormatDate(dateOut.toISOString()), 
           guest: '2',
-          // showLoading={setShowLoading(false)}
         }
       );
       const yogyaHotel = await getSearchList(
@@ -88,23 +90,18 @@ import LoadingModal from '../components/LoadingModal';
       );
       setTopBali(baliHotel);
       setTopYogya(yogyaHotel);
+      if (topBali.length > 0 && topYogya.length > 0) {
+      setShowLoading(false)
+
+      }
     }
     
     useEffect(() => {
       fetchTopHotel();
     }, [])
+    
     useFocusEffect(() => {
       checkNavigator();
-    })
-
-    React.useLayoutEffect(()=>{
- 
-    })
-
-    useLayoutEffect(() => {
-      setTimeout(() => {
-        setShowLoading(false)
-      }, 1000)
     })
 
     const getList = () => {
@@ -138,17 +135,23 @@ import LoadingModal from '../components/LoadingModal';
       return (
         <SafeAreaView>
           {/* navbar */}
-          <View className="bg-[#405189] flex flex-row justify-between p-3">
-            <View className="w-20"></View>
-            <Text className="text-white text-2xl">Home</Text>
-            {showLoginButton && (
-              <TouchableOpacity activeOpacity={1.0}>
-                <Text
-                  onPress={setNavigator}
-                  className={`bg-white p-2 border w-20 mr-2 rounded-xl text-[#405189] font-bold text-center `}>
-                  Login
-                </Text>
-              </TouchableOpacity>
+          <View className="bg-[#405189] flex flex-row p-3">
+            <View className="grow mr-36"></View>
+            <View className="justify-center">
+              <Text className="text-white text-2xl">Home</Text>
+            </View>
+            {showLoginButton ? (
+              <View className="grow">
+                <TouchableOpacity activeOpacity={1.0}>
+                  <Text
+                    onPress={setNavigator}
+                    className={`bg-white p-2 border ml-28 rounded-xl text-[#405189] font-bold text-center `}>
+                    Login
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+            <View className="grow ml-32"></View>
             )}
           </View>
           {/* end navbar */}

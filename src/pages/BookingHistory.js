@@ -53,12 +53,10 @@ export default function BookingHistory({navigation, route}) {
               <Image source={{uri: i.image}} className="w-40 h-44 my-auto object-contain rounded-lg"/>
               <View className="w-3/5">
               <Text className='text-black text-xl font-semibold mb-1' numberOfLines={2}>{i.hotelName}</Text>
-                <View className="flex flex-row justify-between mt-1">
-                  <Text className="text-black text-lg">Name</Text>
+                <View className="flex flex-row justify-end mt-1">
                   <Text className="text-black text-lg">{i.name}</Text>
                 </View>
-                <View className="flex flex-row justify-between mt-1">
-                  <Text className="text-black text-lg">Email</Text>
+                <View className="flex flex-row justify-end mt-1">
                   <Text className="text-black text-lg">{i.email}</Text>
                 </View>
                 <Text className="text-black text-lg font-semibold mt-2">{i.totalDay} Day, {i.totalRoom} Room, {i.guest} Guest</Text>
