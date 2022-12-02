@@ -9,7 +9,7 @@ import {
   SafeAreaView,
   TouchableOpacity,
 } from 'react-native';  
-import { useState } from 'react';
+import { useLayoutEffect, useState } from 'react';
 import DatePicker from 'react-native-date-picker'
 import {NavigationContainer, useFocusEffect} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
@@ -54,6 +54,7 @@ import LoadingModal from '../components/LoadingModal';
     };  
 
     const fetchSearchHotel = async () => {
+      setShowLoading(true)
       const responseQuery = await searchQuery({inputSearch});
       const searchList = await getSearchList(
         {
@@ -89,13 +90,16 @@ import LoadingModal from '../components/LoadingModal';
     
     useEffect(() => {
       fetchTopHotel();
-      if (topBali?.length > 0 && topYogya?.length > 0) {
-        setShowLoading(false)
-      }
-    }, [topBali, topYogya])
+    }, [])
 
     useFocusEffect(()=>{
       checkNavigator();
+    })
+
+    useLayoutEffect(() => {
+      setTimeout(() => {
+        setShowLoading(false)
+      }, 5000)
     })
 
     const getList = () => {
